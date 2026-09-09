@@ -1,0 +1,26 @@
+:root{
+  /* paleta */
+  --bf-peach: #FF9E80;
+  --bf-rose: #F27B9D;
+  --bf-coral: #E86A5C;
+  --bf-sage: #A7C9A9;
+  --bf-cacao: #7A4E48;
+  --bf-cream: #FFF5EE;
+  --bf-cream-tile: #FFF0E8;
+  --bf-ink: #2B2B2B;
+  --bf-white: #FFFFFF;
+
+  /* papéis (use estes na UI) */
+  --bf-bg: #FFF5EE;
+  --bf-surface: #FFFFFF;
+  --bf-primary: #F27B9D;
+  --bf-primary-2: #FF9E80;
+  --bf-accent: #E86A5C;
+  --bf-ok: #A7C9A9;
+  --bf-text: #7A4E48;
+  --bf-text-soft: #A98178;
+  --bf-ink: #2B2B2B;
+
+  /* degradê da marca (lupa, botões) */
+  --bf-gradient: linear-gradient(135deg, #FFA98A 0%, #F27B9D 100%);
+}
