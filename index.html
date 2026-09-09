@@ -3,165 +3,280 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Fralda Barata — melhor preço por fralda | Ofertas Maternas</title>
-<meta name="description" content="Compare o preço por fralda das melhores marcas na Amazon e Shopee. Atualizado várias vezes ao dia.">
+<title>Fralda Barata — o menor preço por fralda | Amazon e Shopee</title>
+<meta name="description" content="Compare o preço por fralda das melhores marcas na Amazon, Mercado Livre e Shopee. Só produtos bem avaliados, atualizado várias vezes ao dia.">
 <link rel="preconnect" href="https://qkherjtsvakmpkxebuwy.supabase.co">
 <style>
   :root{
-    --bg:#fbf7f4; --card:#fff; --ink:#2b2430; --muted:#8b8090; --line:#efe7e2;
-    --rose:#e8637f; --rose-d:#d24d6a; --teal:#2bb6a6; --amber:#f0a020;
-    --amazon:#232f3e; --shopee:#ee4d2d; --ml:#ffe600; --ml-ink:#2d3277;
-    --ok:#189d6b; --shadow:0 2px 10px rgba(120,80,90,.07);
+    --bg:#fbf7f4;--card:#fff;--ink:#2b2430;--muted:#8b8090;--line:#efe7e2;
+    --rose:#e8637f;--rose-d:#c2416a;--price:#9c2f56;--teal:#2bb6a6;--amber:#c98a00;--green:#189d6b;
+    --amazon:#232f3e;--shopee:#ee4d2d;--ml:#3483fa;
+    --shadow:0 2px 10px rgba(120,80,90,.07);
   }
   *{box-sizing:border-box}
   body{margin:0;background:var(--bg);color:var(--ink);font-family:'Segoe UI',system-ui,-apple-system,sans-serif;-webkit-font-smoothing:antialiased}
   a{color:inherit}
-  header{background:linear-gradient(135deg,#fff 0%,#fdeef0 100%);border-bottom:1px solid var(--line);padding:16px 18px 12px}
-  .wrap{max-width:1080px;margin:0 auto}
-  .brand{display:flex;align-items:center;gap:10px}
-  .brand .logo{width:38px;height:38px;border-radius:12px;background:linear-gradient(135deg,var(--rose),var(--amber));display:flex;align-items:center;justify-content:center;font-size:20px}
-  h1{font-size:1.28rem;margin:0;font-weight:800;letter-spacing:-.3px}
+  .wrap{max-width:1080px;margin:0 auto;padding:0 18px}
+  header{background:linear-gradient(135deg,#fff,#fdeef0);border-bottom:1px solid var(--line);padding:15px 0 0}
+  .top{display:flex;align-items:center;gap:11px}
+  .logo{width:40px;height:40px;border-radius:12px;background:linear-gradient(135deg,var(--rose),var(--amber));display:flex;align-items:center;justify-content:center;font-size:21px;flex-shrink:0}
+  h1{font-size:1.3rem;margin:0;font-weight:800;letter-spacing:-.3px}
   h1 span{color:var(--rose-d)}
   .sub{color:var(--muted);font-size:.82rem;margin:2px 0 0}
+  .navlinks{margin-left:auto;display:flex;gap:6px}
+  .navlinks button{background:#fff;border:1.5px solid var(--line);border-radius:9px;padding:7px 12px;font-size:.82rem;font-weight:700;cursor:pointer;color:var(--rose-d)}
+  .navlinks button:hover{border-color:var(--rose)}
+  /* tabs categoria */
+  .cats{display:flex;gap:8px;margin-top:14px;border-bottom:1px solid var(--line)}
+  .cat{background:none;border:none;border-bottom:3px solid transparent;padding:9px 4px;margin-bottom:-1px;font-size:.95rem;font-weight:700;color:var(--muted);cursor:pointer;display:flex;align-items:center;gap:6px}
+  .cat.on{color:var(--rose-d);border-color:var(--rose)}
   /* filtros */
-  .filters{max-width:1080px;margin:14px auto 0;padding:0 18px;display:flex;flex-direction:column;gap:12px}
+  .filters{padding:11px 0 0;display:flex;flex-direction:column;gap:7px}
   .frow{display:flex;flex-wrap:wrap;gap:7px;align-items:center}
-  .flabel{font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--muted);min-width:64px}
-  .chip{border:1.5px solid var(--line);background:#fff;color:var(--ink);border-radius:999px;padding:6px 13px;font-size:.85rem;font-weight:600;cursor:pointer;transition:.12s;white-space:nowrap}
-  .chip:hover{border-color:var(--rose)}
-  .chip.on{background:var(--rose);border-color:var(--rose);color:#fff}
-  select{border:1.5px solid var(--line);border-radius:10px;padding:7px 11px;font-size:.85rem;font-weight:600;background:#fff;color:var(--ink);cursor:pointer}
+  .flabel{font-size:.71rem;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--muted);min-width:60px}
+  .chip{border:1.5px solid var(--line);background:#fff;color:var(--ink);border-radius:999px;padding:5px 12px;font-size:.84rem;font-weight:600;cursor:pointer;transition:.12s;white-space:nowrap}
+  .chip:hover{border-color:var(--rose)}.chip.on{background:var(--rose);border-color:var(--rose);color:#fff}
+  select{border:1.5px solid var(--line);border-radius:10px;padding:7px 11px;font-size:.84rem;font-weight:600;background:#fff;color:var(--ink);cursor:pointer}
   .count{color:var(--muted);font-size:.8rem;margin-left:auto;font-weight:600}
   /* grid */
-  main{max-width:1080px;margin:16px auto 40px;padding:0 18px}
+  main{padding:16px 0 10px}
   .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(228px,1fr));gap:13px}
-  .prod{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:13px;box-shadow:var(--shadow);display:flex;flex-direction:column;gap:9px;position:relative}
-  .mk{position:absolute;top:11px;right:11px;font-size:.66rem;font-weight:800;padding:3px 8px;border-radius:7px;text-transform:uppercase;letter-spacing:.4px}
-  .mk.amazon{background:var(--amazon);color:#fff}
-  .mk.shopee{background:var(--shopee);color:#fff}
-  .thumb{height:120px;border-radius:11px;background:#f6f0ec center/contain no-repeat;display:flex;align-items:center;justify-content:center;font-size:34px}
-  .ppf{display:flex;align-items:baseline;gap:5px}
-  .ppf b{font-size:1.62rem;font-weight:800;color:var(--rose-d);letter-spacing:-.5px}
-  .ppf small{color:var(--muted);font-size:.76rem;font-weight:600}
-  .tt{font-size:.83rem;line-height:1.3;font-weight:600;min-height:2.6em;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+  .prod{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:13px;box-shadow:var(--shadow);display:flex;flex-direction:column;gap:8px;position:relative}
+  .mk{position:absolute;top:11px;right:11px;font-size:.64rem;font-weight:800;padding:3px 8px;border-radius:7px;text-transform:uppercase;letter-spacing:.4px;color:#fff}
+  .mk.amazon{background:var(--amazon)}.mk.shopee{background:var(--shopee)}.mk.ml{background:var(--ml)}
+  .thumb{height:118px;border-radius:11px;background:#f6f0ec center/contain no-repeat;display:flex;align-items:center;justify-content:center;font-size:32px}
+  .badges{display:flex;gap:5px;flex-wrap:wrap;min-height:20px}
+  .disc{background:#fce9ee;color:var(--price);font-size:.72rem;font-weight:800;padding:2px 7px;border-radius:6px}
+  .star{background:#f4f0ee;color:#8a7a3e;font-size:.72rem;font-weight:700;padding:2px 7px;border-radius:6px}
+  .star b{color:var(--amber)}
+  .ofi{background:#eef4f2;color:#3f857a;font-size:.68rem;font-weight:700;padding:2px 7px;border-radius:6px}
+  .ppf{display:flex;align-items:baseline;gap:5px;margin-top:1px}
+  .ppf b{font-size:1.62rem;font-weight:800;color:var(--price);letter-spacing:-.5px}
+  .ppf small{color:#6b6270;font-size:.76rem;font-weight:700}
+  .tt{font-size:.82rem;line-height:1.3;font-weight:600;min-height:2.6em;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
   .meta{display:flex;flex-wrap:wrap;gap:5px}
-  .tag{font-size:.7rem;font-weight:700;background:#f5eef0;color:#7a6b74;padding:2px 8px;border-radius:6px}
+  .tag{font-size:.69rem;font-weight:700;background:#f5eef0;color:#7a6b74;padding:2px 8px;border-radius:6px}
   .tag.size{background:#e7f6f3;color:#178a7d}
-  .tot{font-size:.78rem;color:var(--muted);font-weight:600}
-  .tot b{color:var(--ink)}
-  .ver{margin-top:auto;display:block;text-align:center;background:var(--ok);color:#fff;font-weight:800;text-decoration:none;padding:10px;border-radius:11px;font-size:.9rem;transition:.12s}
+  .tot{font-size:.79rem;color:#5a5260;font-weight:600}.tot b{color:var(--ink);font-weight:800}
+  .tot .de{text-decoration:line-through;opacity:.65;margin-left:5px;color:var(--muted)}
+  .ver{margin-top:auto;display:block;text-align:center;background:var(--green);color:#fff;font-weight:800;text-decoration:none;padding:10px;border-radius:11px;font-size:.9rem;transition:.12s}
   .ver:hover{background:#137a52}
-  .empty,.loading{text-align:center;color:var(--muted);padding:50px 20px;font-size:.95rem}
-  .skel{background:linear-gradient(90deg,#f3ece8,#faf5f2,#f3ece8);background-size:200% 100%;animation:sh 1.2s infinite;border-radius:16px;height:280px}
-  @keyframes sh{to{background-position:-200% 0}}
-  footer{text-align:center;color:var(--muted);font-size:.75rem;padding:24px 18px 40px;line-height:1.6}
-  @media(max-width:560px){.grid{grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:10px}.ppf b{font-size:1.4rem}h1{font-size:1.1rem}}
+  .empty,.loading{text-align:center;color:var(--muted);padding:44px 20px;font-size:.95rem}
+  /* calculadora */
+  .calc{background:#fff;border:1px solid var(--line);border-radius:16px;padding:18px;margin:8px 0 0;box-shadow:var(--shadow)}
+  .calc h3{margin:0 0 4px;font-size:1.05rem}
+  .calc p.h{color:var(--muted);font-size:.84rem;margin:0 0 12px}
+  .calc .row{display:flex;flex-wrap:wrap;gap:10px}
+  .calc .fld{flex:1;min-width:120px;display:flex;flex-direction:column;gap:4px}
+  .calc label{font-size:.72rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.4px}
+  .calc input{border:1.5px solid var(--line);border-radius:10px;padding:9px 11px;font-size:.95rem;font-weight:600}
+  .calc .res{margin-top:14px;background:linear-gradient(135deg,#fdeef0,#fff);border-radius:12px;padding:14px;text-align:center}
+  .calc .res b{font-size:1.8rem;color:var(--rose-d);font-weight:800}
+  .calc .res .cmp{font-size:.85rem;color:var(--muted);margin-top:5px}
+  /* conteudo/rodape */
+  .info{margin:34px 0 0;background:#fff;border:1px solid var(--line);border-radius:16px;padding:22px;box-shadow:var(--shadow)}
+  .info h2{font-size:1.15rem;margin:0 0 10px}
+  .info h3{font-size:.98rem;margin:18px 0 6px;color:var(--rose-d)}
+  .info p{font-size:.9rem;line-height:1.65;color:#4a4350;margin:0 0 10px}
+  details{border-top:1px solid var(--line);padding:11px 0}
+  details summary{font-weight:700;cursor:pointer;font-size:.92rem;list-style:none}
+  details summary::-webkit-details-marker{display:none}
+  details summary::before{content:'+ ';color:var(--rose)}
+  details[open] summary::before{content:'– '}
+  details p{margin:8px 0 2px;font-size:.88rem;color:#4a4350;line-height:1.6}
+  footer{padding:26px 0 44px;color:var(--muted);font-size:.78rem;line-height:1.7}
+  footer a{color:var(--rose-d);text-decoration:none;font-weight:600}
+  footer .emp{margin-top:12px;padding-top:12px;border-top:1px solid var(--line)}
+  .hidden{display:none}
+  @media(max-width:560px){.grid{grid-template-columns:repeat(auto-fill,minmax(158px,1fr));gap:10px}.ppf b{font-size:1.36rem}h1{font-size:1.08rem}.navlinks{width:100%;margin:8px 0 0}}
 </style>
 </head>
 <body>
 <header>
   <div class="wrap">
-    <div class="brand">
+    <div class="top">
       <div class="logo">🍃</div>
       <div>
         <h1>Fralda <span>Barata</span></h1>
-        <p class="sub">O menor preço <b>por fralda</b> — comparado na Amazon e Shopee</p>
+        <p class="sub">O menor preço <b>por fralda</b>, comparado pra você</p>
+      </div>
+      <div class="navlinks">
+        <button onclick="showCalc()">🧮 Calculadora</button>
+        <button onclick="document.getElementById('comofunciona').scrollIntoView({behavior:'smooth'})">Como funciona</button>
       </div>
     </div>
+    <div class="cats" id="cats"></div>
   </div>
 </header>
 
-<div class="filters">
-  <div class="frow"><span class="flabel">Tamanho</span><div id="fTam" class="frow"></div></div>
-  <div class="frow"><span class="flabel">Tipo</span><div id="fTipo" class="frow"></div></div>
-  <div class="frow">
-    <span class="flabel">Marca</span>
-    <select id="fMarca"><option value="">Todas as marcas</option></select>
-    <select id="fMkt"><option value="">Amazon + Shopee</option><option value="amazon">Amazon</option><option value="shopee">Shopee</option></select>
-    <select id="fSort"><option value="asc">Mais barato ⬇️</option><option value="desc">Mais caro ⬆️</option></select>
-    <span class="count" id="count"></span>
+<div class="wrap">
+  <div class="filters" id="filters">
+    <div class="frow" id="rowTam"><span class="flabel">Tamanho</span><div id="fTam" class="frow"></div></div>
+    <div class="frow" id="rowTipo"><span class="flabel">Tipo</span><div id="fTipo" class="frow"></div></div>
+    <div class="frow">
+      <span class="flabel">Filtrar</span>
+      <select id="fMarca"><option value="">Todas as marcas</option></select>
+      <select id="fMkt"><option value="">Todas as lojas</option><option value="amazon">Amazon</option><option value="ml">Mercado Livre</option><option value="shopee">Shopee</option></select>
+      <select id="fSort"><option value="asc">Mais barato ⬇️</option><option value="desc">Mais caro ⬆️</option><option value="desconto">Maior desconto</option></select>
+      <span class="count" id="count"></span>
+    </div>
   </div>
+
+  <!-- calculadora -->
+  <div class="calc hidden" id="calc">
+    <h3>🧮 Calculadora de preço por fralda</h3>
+    <p class="h">Viu uma fralda no mercado? Descubra quanto custa cada uma e compare com o melhor preço que achamos.</p>
+    <div class="row">
+      <div class="fld"><label>Preço do pacote (R$)</label><input id="cPreco" type="number" inputmode="decimal" placeholder="Ex: 49,90" oninput="calc()"></div>
+      <div class="fld"><label>Qtd. de fraldas</label><input id="cQtd" type="number" inputmode="numeric" placeholder="Ex: 70" oninput="calc()"></div>
+    </div>
+    <div class="res" id="cRes"><b>—</b><div class="cmp">Preencha preço e quantidade.</div></div>
+  </div>
+
+  <main>
+    <div id="grid" class="grid"></div>
+    <div id="msg" class="loading">Buscando as melhores ofertas…</div>
+  </main>
+
+  <!-- como funciona / faq -->
+  <div class="info" id="comofunciona">
+    <h2>Como o Fralda Barata funciona</h2>
+    <p>Fralda pesa no orçamento de qualquer família — e o preço que aparece na embalagem engana. Um pacote "barato" com poucas unidades quase sempre sai mais caro por fralda do que um pacote maior. Aqui a conta já vem pronta: pegamos as ofertas das principais lojas, dividimos pelo número de fraldas e mostramos o que realmente importa, o <b>preço por fralda</b>.</p>
+    <h3>De onde vêm os preços</h3>
+    <p>Varremos automaticamente Amazon, Mercado Livre e Shopee várias vezes ao dia. Cada produto passa por uma limpeza: tiramos pacotão de revenda, fralda geriátrica e itens que não são de bebê, e ficamos só com o que dá pra comparar de verdade.</p>
+    <h3>Só o que é bom</h3>
+    <p>Na Shopee e no Mercado Livre mantemos apenas produtos com <b>nota 4 ou mais</b>, de lojas bem avaliadas. Na Amazon confiamos na curadoria da própria plataforma. Assim você não perde tempo com anúncio duvidoso.</p>
+    <h3>Como a gente se mantém</h3>
+    <p>Os botões "Ver oferta" levam para a loja com um link de afiliado. Você paga exatamente o mesmo preço — e uma pequena comissão ajuda a manter o comparador no ar. Não vendemos nada e não guardamos seu cartão.</p>
+
+    <details><summary>O preço daqui é sempre o mesmo da loja?</summary><p>Mostramos o valor coletado na última atualização. Promoções mudam o tempo todo, então o preço final é sempre o que aparecer na loja no momento da compra — sempre confira antes de fechar.</p></details>
+    <details><summary>Por que a mesma fralda aparece com preços diferentes?</summary><p>Porque cada loja e cada pacote têm preços próprios. É justamente isso que o comparador resolve: ordenando por preço por fralda, você enxerga na hora onde compensa.</p></details>
+    <details><summary>Vocês vendem fralda?</summary><p>Não. Somos só um comparador. A compra acontece direto na Amazon, Mercado Livre ou Shopee, com toda a segurança dessas plataformas.</p></details>
+    <details><summary>Com que frequência os preços atualizam?</summary><p>Várias vezes ao dia, de forma automática. Ainda assim, o preço da loja é a fonte final.</p></details>
+  </div>
+
+  <footer>
+    Preços coletados automaticamente na Amazon, Mercado Livre e Shopee, atualizados várias vezes ao dia — podem mudar no momento da compra. Os links levam à loja com identificação de afiliado; o preço para você é o mesmo.
+    <br><br>
+    <a href="termos.html">Termos de uso</a> · <a href="privacidade.html">Privacidade</a> · <a href="mailto:suporte@manualdorecemnascido.com.br">Contato</a>
+    <div class="emp">
+      <b>MRN SERVIÇOS DIGITAIS LTDA</b> — Contato: <a href="mailto:suporte@manualdorecemnascido.com.br">suporte@manualdorecemnascido.com.br</a><br>
+      💛 Um projeto Ofertas Maternas
+    </div>
+  </footer>
 </div>
-
-<main>
-  <div id="grid" class="grid"></div>
-  <div id="msg" class="loading">Buscando as melhores ofertas de fralda…</div>
-</main>
-
-<footer>
-  Preços coletados automaticamente na Amazon e Shopee, atualizados várias vezes ao dia. Podem variar no momento da compra.<br>
-  Os links são de afiliado — você paga o mesmo e ajuda a manter o comparador. 💛 Ofertas Maternas
-</footer>
 
 <script>
 const SUPA='https://qkherjtsvakmpkxebuwy.supabase.co';
 const ANON='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFraGVyanRzdmFrbXBreGVidXd5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzU5Mjk0MjIsImV4cCI6MjA5MTUwNTQyMn0.8AHXoj74DeQ00ubcJ2en7TxX77K3KD5dHWdAJ8LBQBc';
 const TAM_ORDER=['RN','RN+','P','M','G','XG','XXG','XXXG','XXXG+','PP','GG'];
 const TIPOS=[['normal','Normal'],['pants','Pants'],['piscina','Piscina']];
-let DATA=[], f={tam:'',tipo:'',marca:'',mkt:'',sort:'asc'};
+const CATS=[['fralda','🧷 Fraldas'],['lencinho','💧 Lenços'],['formula','🍼 Fórmula']];
+let DATA=[], cat='fralda', f={tam:'',tipo:'',marca:'',mkt:'',sort:'asc'};
 
 const brl=n=>'R$ '+Number(n).toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2});
+const ppfTxt=n=>'R$'+Number(n).toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2});
 const el=(t,c,h)=>{const e=document.createElement(t);if(c)e.className=c;if(h!=null)e.innerHTML=h;return e;};
+const esc=s=>{const d=el('div');d.textContent=s||'';return d.innerHTML;};
+
+// tabs de categoria
+const catsBox=document.getElementById('cats');
+CATS.forEach(([v,l])=>{const b=el('button','cat'+(v===cat?' on':''),l);b.onclick=()=>{cat=v;[...catsBox.children].forEach(x=>x.classList.remove('on'));b.classList.add('on');f={tam:'',tipo:'',marca:'',mkt:'',sort:'asc'};document.getElementById('fSort').value='asc';document.getElementById('fMkt').value='';buildFilters();render();};catsBox.appendChild(b);});
 
 async function load(){
   try{
-    const r=await fetch(`${SUPA}/rest/v1/produtos?select=marketplace,titulo,marca,tamanho,tipo,quantidade,preco,preco_por_fralda,link_afiliado,imagem_url&order=preco_por_fralda.asc&limit=1000`,
+    const r=await fetch(`${SUPA}/rest/v1/produtos?select=marketplace,categoria,titulo,marca,tamanho,tipo,quantidade,unidade,preco,preco_original,desconto_pct,preco_por_fralda,rating,oficial,link_afiliado,imagem_url&order=preco_por_fralda.asc&limit=2000`,
       {headers:{apikey:ANON,'Accept-Profile':'fraldas'}});
-    DATA=await r.json();
-    if(!Array.isArray(DATA)) throw new Error('resposta inválida');
+    DATA=await r.json(); if(!Array.isArray(DATA)) throw 0;
     buildFilters(); render();
-  }catch(e){ document.getElementById('msg').textContent='Não foi possível carregar as ofertas agora. Tente recarregar.'; }
+  }catch(e){ document.getElementById('msg').textContent='Não deu pra carregar agora. Recarregue a página.'; }
 }
 
+function catData(){ return DATA.filter(p=>(p.categoria||'fralda')===cat); }
+
 function buildFilters(){
-  const tams=[...new Set(DATA.map(p=>p.tamanho).filter(Boolean))].sort((a,b)=>TAM_ORDER.indexOf(a)-TAM_ORDER.indexOf(b));
-  const ft=document.getElementById('fTam'); ft.innerHTML='';
-  chip(ft,'','Todos',()=> setF('tam',''));
-  tams.forEach(t=>chip(ft,t,t,()=>setF('tam',t)));
-  const fp=document.getElementById('fTipo'); fp.innerHTML='';
-  chip(fp,'','Todos',()=>setF('tipo',''));
-  TIPOS.filter(([v])=>DATA.some(p=>p.tipo===v)).forEach(([v,l])=>chip(fp,v,l,()=>setF('tipo',v)));
-  const marcas=[...new Set(DATA.map(p=>p.marca).filter(Boolean))].sort();
-  const fm=document.getElementById('fMarca');
+  const d=catData();
+  const isFralda=cat==='fralda';
+  document.getElementById('rowTam').style.display=isFralda?'flex':'none';
+  document.getElementById('rowTipo').style.display=isFralda?'flex':'none';
+  if(isFralda){
+    const tams=[...new Set(d.map(p=>p.tamanho).filter(Boolean))].sort((a,b)=>TAM_ORDER.indexOf(a)-TAM_ORDER.indexOf(b));
+    const ft=document.getElementById('fTam');ft.innerHTML='';ft.dataset.v='';
+    chip(ft,'','Todos',()=>{f.tam='';render();});
+    tams.forEach(t=>chip(ft,t,t,()=>{f.tam=t;render();}));
+    const fp=document.getElementById('fTipo');fp.innerHTML='';fp.dataset.v='';
+    chip(fp,'','Todos',()=>{f.tipo='';render();});
+    TIPOS.filter(([v])=>d.some(p=>p.tipo===v)).forEach(([v,l])=>chip(fp,v,l,()=>{f.tipo=v;render();}));
+  }
+  const marcas=[...new Set(d.map(p=>p.marca).filter(Boolean))].sort();
+  const fm=document.getElementById('fMarca');fm.innerHTML='<option value="">Todas as marcas</option>';
   marcas.forEach(m=>{const o=el('option');o.value=m;o.textContent=m;fm.appendChild(o);});
   fm.onchange=()=>{f.marca=fm.value;render();};
   document.getElementById('fMkt').onchange=e=>{f.mkt=e.target.value;render();};
   document.getElementById('fSort').onchange=e=>{f.sort=e.target.value;render();};
 }
 function chip(box,val,label,fn){const c=el('button','chip'+((box.dataset.v||'')===val?' on':''),label);c.dataset.val=val;c.onclick=()=>{box.dataset.v=val;[...box.children].forEach(x=>x.classList.toggle('on',x.dataset.val===val));fn();};box.appendChild(c);}
-function setF(k,v){f[k]=v;render();}
+
+function stars(r){ if(!r) return ''; return `<span class="star"><b>★ ${r.toFixed(1)}</b></span>`; }
 
 function render(){
-  let list=DATA.filter(p=>
+  let list=catData().filter(p=>
     (!f.tam||p.tamanho===f.tam)&&(!f.tipo||p.tipo===f.tipo)&&
     (!f.marca||p.marca===f.marca)&&(!f.mkt||p.marketplace===f.mkt));
-  list.sort((a,b)=>f.sort==='asc'?a.preco_por_fralda-b.preco_por_fralda:b.preco_por_fralda-a.preco_por_fralda);
-  const g=document.getElementById('grid'); g.innerHTML='';
-  document.getElementById('msg').style.display=list.length?'none':'block';
-  document.getElementById('msg').textContent=list.length?'':'Nenhuma fralda com esses filtros. Tente afrouxar a busca.';
+  if(f.sort==='desconto') list.sort((a,b)=>(b.desconto_pct||0)-(a.desconto_pct||0));
+  else list.sort((a,b)=>f.sort==='asc'?a.preco_por_fralda-b.preco_por_fralda:b.preco_por_fralda-a.preco_por_fralda);
+  // esconde duplicados visuais (mesmo titulo+preço de vendedores diferentes)
+  const vis=new Set(); list=list.filter(p=>{const k=(p.titulo||'').toLowerCase().slice(0,40)+'|'+p.preco;if(vis.has(k))return false;vis.add(k);return true;});
+  const g=document.getElementById('grid');g.innerHTML='';
+  const msg=document.getElementById('msg');
+  if(!list.length){msg.style.display='block';msg.textContent=catData().length?'Nenhum item com esses filtros.':'Ainda estamos coletando esta categoria. Volte em breve! 💛';}
+  else msg.style.display='none';
   document.getElementById('count').textContent=list.length+' ofertas';
   const frag=document.createDocumentFragment();
   for(const p of list){
     const card=el('div','prod');
-    card.appendChild(el('span','mk '+p.marketplace,p.marketplace));
+    card.appendChild(el('span','mk '+p.marketplace,p.marketplace==='ml'?'Mercado Livre':p.marketplace));
     const th=el('div','thumb',p.imagem_url?'':'🧷');
     if(p.imagem_url) th.style.backgroundImage=`url("${p.imagem_url}")`;
     card.appendChild(th);
-    card.appendChild(el('div','ppf',`<b>${brl(p.preco_por_fralda).replace('R$ ','R$')}</b><small>/fralda</small>`));
+    const badges=el('div','badges');
+    if(p.desconto_pct) badges.appendChild(el('span','disc',`−${p.desconto_pct}%`));
+    if(p.rating) badges.innerHTML+=stars(p.rating);
+    if(p.oficial&&p.marketplace==='shopee') badges.appendChild(el('span','ofi','loja oficial'));
+    card.appendChild(badges);
+    const un=p.unidade||'fralda';
+    card.appendChild(el('div','ppf',`<b>${ppfTxt(p.preco_por_fralda)}</b><small>/${un}</small>`));
     card.appendChild(el('div','tt',esc(p.titulo)));
     const meta=el('div','meta');
     if(p.marca)meta.appendChild(el('span','tag',esc(p.marca)));
     if(p.tamanho)meta.appendChild(el('span','tag size',p.tamanho));
     if(p.tipo&&p.tipo!=='normal')meta.appendChild(el('span','tag',p.tipo));
     card.appendChild(meta);
-    card.appendChild(el('div','tot',`${brl(p.preco)} · <b>${p.quantidade}</b> fraldas`));
+    const de=p.preco_original&&p.preco_original>p.preco?`<span class="de">${brl(p.preco_original)}</span>`:'';
+    card.appendChild(el('div','tot',`${brl(p.preco)}${de} · <b>${p.quantidade}</b> ${un==='100g'?'g':un+'s'}`));
     const a=el('a','ver');a.textContent='Ver oferta';a.href=p.link_afiliado;a.target='_blank';a.rel='nofollow noopener sponsored';
     card.appendChild(a);
     frag.appendChild(card);
   }
   g.appendChild(frag);
 }
-function esc(s){const d=el('div');d.textContent=s||'';return d.innerHTML;}
+
+// calculadora
+function showCalc(){const c=document.getElementById('calc');c.classList.toggle('hidden');if(!c.classList.contains('hidden'))c.scrollIntoView({behavior:'smooth'});}
+function calc(){
+  const p=parseFloat((document.getElementById('cPreco').value||'').replace(',','.'));
+  const q=parseInt(document.getElementById('cQtd').value||'');
+  const res=document.getElementById('cRes');
+  if(!(p>0)||!(q>0)){res.innerHTML='<b>—</b><div class="cmp">Preencha preço e quantidade.</div>';return;}
+  const v=p/q;
+  const melhor=catData().filter(x=>x.categoria==='fralda').reduce((m,x)=>x.preco_por_fralda<m?x.preco_por_fralda:m,Infinity);
+  let cmp='';
+  if(isFinite(melhor)){
+    if(v<=melhor) cmp=`🎉 Excelente! É mais barato que o melhor que achamos (${ppfTxt(melhor)}).`;
+    else{const dif=Math.round((v/melhor-1)*100);cmp=`O melhor preço que achamos é ${ppfTxt(melhor)} — cerca de ${dif}% mais barato.`;}
+  }
+  res.innerHTML=`<b>${ppfTxt(v)}</b> <small style="color:var(--muted)">/fralda</small><div class="cmp">${cmp}</div>`;
+}
 load();
 </script>
 </body>
