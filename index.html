@@ -44,14 +44,18 @@
   .hero h1 em{font-style:normal;color:var(--coral)}
   .hero p{font-size:.95rem;color:#8a5a6e;margin:0 0 16px;font-weight:500;max-width:460px}
   .hero .pick{font-family:var(--disp);font-size:.85rem;font-weight:700;letter-spacing:.2px;color:#8a4a62;margin:0 0 10px}
+  .hero .daily{display:inline-flex;align-items:center;gap:7px;background:#fff;color:#3d8a48;font-family:var(--disp);font-weight:800;font-size:.72rem;letter-spacing:.3px;text-transform:uppercase;padding:6px 13px;border-radius:999px;margin:0 0 12px;box-shadow:0 3px 12px rgba(200,110,130,.18)}
+  .hero .daily::before{content:"";width:8px;height:8px;border-radius:50%;background:#2fbf6f;box-shadow:0 0 0 3px rgba(47,191,111,.24)}
   .sizes{display:flex;flex-wrap:wrap;gap:8px}
   .sz{background:#fff;border:2px solid #fff;border-radius:13px;min-width:54px;padding:11px 15px;font-family:var(--disp);font-weight:700;font-size:.98rem;color:var(--plum);cursor:pointer;box-shadow:0 3px 8px rgba(200,100,120,.14);transition:.12s}
   .sz:hover{border-color:var(--rose);color:var(--rose);transform:translateY(-1px)}
   .hcta{margin-top:16px;display:inline-flex;align-items:center;gap:7px;background:linear-gradient(135deg,#7BC47F 0%,var(--go) 100%);color:#fff;border:none;border-radius:14px;padding:12px 22px;font-family:var(--disp);font-weight:800;font-size:.98rem;cursor:pointer;box-shadow:0 6px 18px rgba(79,169,90,.4);animation:pulse 1.9s ease-in-out infinite}
   .hcta:hover{animation-play-state:paused;filter:brightness(1.04)}
   @keyframes pulse{0%,100%{transform:scale(1);box-shadow:0 6px 18px rgba(79,169,90,.36)}50%{transform:scale(1.04);box-shadow:0 9px 24px rgba(79,169,90,.5)}}
-  .hero .baby{width:250px;flex-shrink:0;align-self:flex-end;margin-bottom:-26px;background:radial-gradient(circle at 50% 62%,rgba(255,255,255,.55),transparent 62%)}
-  .hero .baby img{width:100%;display:block;filter:drop-shadow(0 8px 16px rgba(200,110,130,.22))}
+  .hero .baby{position:relative;width:300px;flex-shrink:0;align-self:flex-end;margin-bottom:-26px;display:flex;justify-content:center}
+  .hero .baby::before{content:"";position:absolute;left:50%;bottom:6px;transform:translateX(-50%);width:246px;height:246px;border-radius:50%;background:radial-gradient(circle at 50% 42%,#fff 0%,rgba(255,255,255,.72) 46%,rgba(255,255,255,0) 71%);box-shadow:0 0 0 10px rgba(255,255,255,.28);z-index:0}
+  .hero .baby::after{content:"";position:absolute;left:50%;bottom:30px;transform:translateX(-50%);width:150px;height:26px;border-radius:50%;background:radial-gradient(ellipse at center,rgba(150,80,100,.22),rgba(150,80,100,0) 70%);z-index:0}
+  .hero .baby img{position:relative;z-index:1;width:264px;max-width:100%;display:block;filter:drop-shadow(0 10px 20px rgba(200,110,130,.26))}
   /* seções da home — box com corzinha por categoria */
   .sec{margin-top:22px;border-radius:22px;padding:18px 20px 22px;border:1px solid transparent}
   .sec.c-fralda{background:#FFF1F5;border-color:#F6D8E2}
@@ -136,7 +140,9 @@
     .hero p{margin-inline:auto}
     .sizes{justify-content:center}
     .hcta{margin-inline:auto}
-    .hero .baby{order:-1;width:158px;align-self:center;margin:0 auto 6px}
+    .hero .baby{order:-1;width:215px;align-self:center;margin:4px auto 8px}
+    .hero .baby::before{width:196px;height:196px;bottom:2px;box-shadow:0 0 0 12px rgba(255,255,255,.30)}
+    .hero .baby img{width:190px}
     .fab.show{display:inline-flex}
     .sechead{gap:9px 10px}
     .sechead h2{flex-basis:100%}
@@ -162,7 +168,8 @@
   <div id="home">
     <div class="hero">
       <div class="txt">
-        <h1>O menor preço <em>por fralda</em>, sem se perder na gôndola</h1>
+        <span class="daily">Atualizado diariamente</span>
+        <h1>As melhores ofertas de fralda, <em>num lugar só</em></h1>
         <p>A gente compara Amazon, Mercado Livre e Shopee e mostra quanto custa <b>cada fralda</b>, só o que é bem avaliado.</p>
         <p class="pick">Comece pelo tamanho do bebê</p>
         <div class="sizes" id="heroSizes"></div>
