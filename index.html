@@ -276,7 +276,7 @@ function renderHome(){
 function goLista(c,filtros){
   cat=c; f={tam:'',tipo:'',marca:'',mkt:'',sort:'asc',...filtros};
   document.getElementById('home').style.display='none';
-  document.getElementById('lista').style.display='';
+  document.getElementById('lista').style.display='block';
   window.scrollTo(0,0);
   buildCats(); buildFilters(); render();
   updateFab();
