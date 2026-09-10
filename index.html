@@ -237,7 +237,13 @@ function initTrack(){
   try{const u=new URLSearchParams(location.search);SRC=u.get('utm_source')||(document.referrer?new URL(document.referrer).hostname.replace(/^www\./,''):'')||'direto';}catch(e){SRC='direto';}
   let cached=null; try{cached=sessionStorage.getItem('bf_geo');}catch(e){}
   if(cached){ try{GEO=JSON.parse(cached);}catch(e){} ev('view'); }
-  else{ fetch('https://ipapi.co/json/').then(r=>r.json()).then(j=>{GEO={cidade:j.city||'',estado:j.region_code||j.region||'',pais:j.country_code||j.country||''};try{sessionStorage.setItem('bf_geo',JSON.stringify(GEO));}catch(e){}ev('view');}).catch(()=>ev('view')); }
+  else{
+    const done=g=>{GEO=g||{};try{sessionStorage.setItem('bf_geo',JSON.stringify(GEO));}catch(e){}ev('view');};
+    fetch('https://ipwho.is/').then(r=>r.json()).then(j=>{
+      if(j&&j.success!==false) done({cidade:j.city||'',estado:j.region_code||j.region||'',pais:j.country_code||''});
+      else throw 0;
+    }).catch(()=>fetch('https://ipapi.co/json/').then(r=>r.json()).then(j=>done({cidade:j.city||'',estado:j.region_code||j.region||'',pais:j.country_code||j.country||''})).catch(()=>ev('view')));
+  }
 }
 
 async function load(){

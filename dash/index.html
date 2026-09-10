@@ -1,0 +1,155 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Busca Fralda — Painel</title>
+<meta name="robots" content="noindex">
+<link rel="icon" href="../assets/favicon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://qkherjtsvakmpkxebuwy.supabase.co">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{--bg:#FFF5EE;--card:#fff;--plum:#6A3A5A;--muted:#A98178;--line:#F4E2D8;--rose:#F27B9D;--coral:#E86A5C;--price:#B23360;--go:#4FA95A;--amazon:#2c3644;--shopee:#cf4a2c;--ml:#2f6fd6;--disp:'Poppins',system-ui,sans-serif;--text:'Inter',system-ui,sans-serif}
+  *{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--plum);font-family:var(--text)}
+  .wrap{max-width:1080px;margin:0 auto;padding:16px 18px 60px}
+  .top{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:14px}
+  h1{font-family:var(--disp);font-size:1.3rem;margin:0;display:flex;align-items:center;gap:9px}
+  h1 .b{color:var(--plum)}h1 .f{color:var(--coral)}
+  .periods{margin-left:auto;display:flex;gap:6px;flex-wrap:wrap}
+  .periods button{background:#fff;border:1.5px solid var(--line);border-radius:999px;padding:6px 14px;font-family:var(--disp);font-weight:700;font-size:.82rem;color:var(--muted);cursor:pointer}
+  .periods button.on{background:var(--rose);border-color:var(--rose);color:#fff}
+  .kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:18px}
+  .kpi{background:linear-gradient(135deg,#fff,#FFF0E8);border:1px solid var(--line);border-radius:16px;padding:15px 16px;box-shadow:0 3px 12px rgba(120,60,90,.07)}
+  .kpi .v{font-family:var(--disp);font-weight:800;font-size:1.7rem;color:var(--price);line-height:1}
+  .kpi .l{font-size:.76rem;color:var(--muted);font-weight:700;margin-top:5px;text-transform:uppercase;letter-spacing:.4px}
+  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+  .box{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:16px 18px;box-shadow:0 3px 12px rgba(120,60,90,.06);margin-bottom:14px}
+  .box h2{font-family:var(--disp);font-size:1rem;margin:0 0 12px;color:var(--plum);display:flex;align-items:center;gap:7px}
+  .row{display:flex;align-items:center;gap:10px;margin:7px 0}
+  .row .lab{font-size:.86rem;font-weight:600;color:#4a3542;min-width:96px;max-width:150px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;flex-shrink:0}
+  .bar{flex:1;height:20px;background:#F7EEF1;border-radius:6px;overflow:hidden}
+  .bar span{display:block;height:100%;border-radius:6px;background:linear-gradient(90deg,var(--rose),var(--coral))}
+  .row .val{font-family:var(--disp);font-weight:800;font-size:.82rem;color:var(--plum);min-width:38px;text-align:right}
+  .b-amazon span{background:linear-gradient(90deg,#8792a3,#2c3644)}.b-shopee span{background:linear-gradient(90deg,#ff8a66,#cf4a2c)}.b-ml span{background:linear-gradient(90deg,#7fb0f7,#2f6fd6)}
+  .b-go span{background:linear-gradient(90deg,#8fd39a,#4FA95A)}
+  .empty{color:var(--muted);font-size:.86rem;padding:8px 0}
+  .plist .row .lab{max-width:none;white-space:normal;min-width:0}
+  .foot{color:var(--muted);font-size:.76rem;margin-top:16px;text-align:center}
+  a{color:var(--coral);text-decoration:none;font-weight:600}
+  @media(max-width:720px){.kpis{grid-template-columns:1fr 1fr}.grid2{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="top">
+    <h1>📊 <span class="b">busca </span><span class="f">fralda</span> · painel</h1>
+    <div class="periods" id="periods">
+      <button data-d="1">Hoje</button>
+      <button data-d="7" class="on">7 dias</button>
+      <button data-d="30">30 dias</button>
+      <button data-d="0">Tudo</button>
+    </div>
+  </div>
+
+  <div class="kpis" id="kpis"></div>
+
+  <div class="grid2">
+    <div class="box"><h2>🏙️ De onde acessam (estado)</h2><div id="estados"></div></div>
+    <div class="box"><h2>📍 Cidades</h2><div id="cidades"></div></div>
+  </div>
+
+  <div class="grid2">
+    <div class="box"><h2>🛒 Cliques por loja</h2><div id="lojas"></div></div>
+    <div class="box"><h2>🔗 Fonte de acesso</h2><div id="fontes"></div></div>
+  </div>
+
+  <div class="grid2">
+    <div class="box"><h2>🏷️ Marcas mais clicadas</h2><div id="marcasclick"></div></div>
+    <div class="box"><h2>🔎 Marcas mais filtradas</h2><div id="marcasfiltro"></div></div>
+  </div>
+
+  <div class="grid2">
+    <div class="box"><h2>📐 Tamanhos mais filtrados</h2><div id="tamanhos"></div></div>
+    <div class="box"><h2>🧷 Categoria mais aberta</h2><div id="categorias"></div></div>
+  </div>
+
+  <div class="box plist"><h2>⭐ Produtos mais clicados</h2><div id="produtos"></div></div>
+
+  <div class="foot" id="foot"></div>
+  <div class="foot"><a href="/">← voltar ao Busca Fralda</a></div>
+</div>
+
+<script>
+const SUPA='https://qkherjtsvakmpkxebuwy.supabase.co';
+const ANON='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFraGVyanRzdmFrbXBreGVidXd5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzU5Mjk0MjIsImV4cCI6MjA5MTUwNTQyMn0.8AHXoj74DeQ00ubcJ2en7TxX77K3KD5dHWdAJ8LBQBc';
+let DIAS=7, EV=[];
+const el=(t,c,h)=>{const e=document.createElement(t);if(c)e.className=c;if(h!=null)e.innerHTML=h;return e;};
+const esc=s=>{const d=document.createElement('div');d.textContent=s==null?'':s;return d.innerHTML;};
+
+async function carrega(){
+  let url=`${SUPA}/rest/v1/eventos?select=tipo,categoria,marca,marketplace,produto_id,filtro_tipo,filtro_valor,source,cidade,estado,device,ts&order=ts.desc&limit=10000`;
+  if(DIAS>0){const since=new Date(Date.now()-DIAS*864e5).toISOString();url+=`&ts=gte.${since}`;}
+  try{
+    const r=await fetch(url,{headers:{apikey:ANON,'Accept-Profile':'fraldas'}});
+    EV=await r.json(); if(!Array.isArray(EV))EV=[];
+  }catch(e){EV=[];}
+  render();
+}
+
+function tally(arr){const m={};arr.forEach(k=>{if(k==null||k==='')return;m[k]=(m[k]||0)+1;});return Object.entries(m).sort((a,b)=>b[1]-a[1]);}
+function bars(id,pairs,cls,fmtLab){
+  const box=document.getElementById(id);box.innerHTML='';
+  if(!pairs.length){box.appendChild(el('div','empty','Sem dados no período.'));return;}
+  const max=pairs[0][1];
+  pairs.slice(0,8).forEach(([lab,v])=>{
+    const row=el('div','row'+(cls?' '+cls:''));
+    row.appendChild(el('div','lab',esc(fmtLab?fmtLab(lab):lab)));
+    const bar=el('div','bar');bar.appendChild(el('span'));bar.firstChild.style.width=Math.max(6,Math.round(v/max*100))+'%';row.appendChild(bar);
+    row.appendChild(el('div','val',v));
+    box.appendChild(row);
+  });
+}
+const NOMEMKT={amazon:'Amazon',shopee:'Shopee',ml:'Mercado Livre'};
+const NOMECAT={fralda:'Fraldas',lencinho:'Lenços',formula:'Fórmula'};
+
+function render(){
+  const views=EV.filter(e=>e.tipo==='view');
+  const clicks=EV.filter(e=>e.tipo==='click');
+  const filtros=EV.filter(e=>e.tipo==='filtro');
+  const listas=EV.filter(e=>e.tipo==='lista');
+  const nAcess=views.length, nClick=clicks.length;
+  const taxa=nAcess?Math.round(nClick/nAcess*100):0;
+  const cidUnicas=new Set(views.map(v=>v.cidade).filter(Boolean)).size;
+  const kpis=[['Acessos',nAcess],['Cliques em ofertas',nClick],['Taxa de clique',taxa+'%'],['Cidades',cidUnicas]];
+  const kb=document.getElementById('kpis');kb.innerHTML='';
+  kpis.forEach(([l,v])=>{const c=el('div','kpi');c.appendChild(el('div','v',v));c.appendChild(el('div','l',l));kb.appendChild(c);});
+
+  bars('estados', tally(views.map(v=>v.estado)), '');
+  bars('cidades', tally(views.map(v=>v.cidade)), '');
+  const lojas=tally(clicks.map(c=>c.marketplace));
+  const lojasBox=document.getElementById('lojas');lojasBox.innerHTML='';
+  if(!lojas.length)lojasBox.appendChild(el('div','empty','Sem cliques no período.'));
+  else{const max=lojas[0][1];lojas.forEach(([lab,v])=>{const row=el('div','row b-'+lab);row.appendChild(el('div','lab',NOMEMKT[lab]||lab));const bar=el('div','bar');bar.appendChild(el('span'));bar.firstChild.style.width=Math.max(6,Math.round(v/max*100))+'%';row.appendChild(bar);row.appendChild(el('div','val',v));lojasBox.appendChild(row);});}
+  bars('fontes', tally(views.map(v=>v.source)), 'b-go');
+  bars('marcasclick', tally(clicks.map(c=>c.marca)), '');
+  bars('marcasfiltro', tally(filtros.filter(f=>f.filtro_tipo==='marca').map(f=>f.filtro_valor)), 'b-go');
+  bars('tamanhos', tally(filtros.filter(f=>f.filtro_tipo==='tamanho').map(f=>f.filtro_valor).concat(listas.map(l=>l.filtro_valor).filter(Boolean))), '');
+  bars('categorias', tally(listas.map(l=>l.categoria)), 'b-go', c=>NOMECAT[c]||c);
+
+  // produtos mais clicados (por marca+loja, já que id é técnico)
+  const pm={};
+  clicks.forEach(c=>{const k=(c.marca||'?')+' · '+(NOMEMKT[c.marketplace]||c.marketplace||'?')+(c.categoria&&c.categoria!=='fralda'?' ('+(NOMECAT[c.categoria]||c.categoria)+')':'');pm[k]=(pm[k]||0)+1;});
+  bars('produtos', Object.entries(pm).sort((a,b)=>b[1]-a[1]), '');
+
+  document.getElementById('foot').textContent=`${EV.length} eventos no período · atualizado ${new Date().toLocaleString('pt-BR')}`;
+}
+
+document.getElementById('periods').addEventListener('click',e=>{
+  const b=e.target.closest('button');if(!b)return;
+  [...document.querySelectorAll('#periods button')].forEach(x=>x.classList.toggle('on',x===b));
+  DIAS=parseInt(b.dataset.d,10);carrega();
+});
+carrega();
+</script>
+</body>
+</html>
