@@ -70,7 +70,7 @@
   .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(224px,1fr));gap:13px}
   .prod{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:13px;box-shadow:var(--shadow);display:flex;flex-direction:column;gap:8px;position:relative}
   .prod.best{border:1.5px solid #E9A23C;background:linear-gradient(180deg,#FFFAF0,#fff);box-shadow:0 5px 18px rgba(233,162,60,.24)}
-  .mk{position:absolute;top:11px;right:11px;font-size:.63rem;font-weight:800;padding:3px 8px;border-radius:7px;text-transform:uppercase;letter-spacing:.4px}
+  .mk{font-size:.63rem;font-weight:800;padding:3px 8px;border-radius:7px;text-transform:uppercase;letter-spacing:.4px;align-self:flex-start}
   .mk.amazon{background:#eef0f3;color:#2c3644}.mk.shopee{background:#fcece6;color:#cf4a2c}.mk.ml{background:#eaf1fd;color:#2f6fd6}
   .bestbadge{position:absolute;top:11px;left:11px;background:var(--grad);color:#fff;font-size:.62rem;font-weight:800;padding:3px 8px;border-radius:7px;text-transform:uppercase;letter-spacing:.4px;z-index:1;box-shadow:0 2px 6px rgba(242,123,157,.4)}
   .thumb{height:118px;border-radius:12px;background:var(--tile) center/contain no-repeat;display:flex;align-items:center;justify-content:center;font-size:32px;margin-top:2px}
@@ -100,7 +100,13 @@
   .cats{display:flex;gap:8px;flex-wrap:wrap}
   .cat{background:#fff;border:1.5px solid var(--line);border-radius:999px;padding:7px 15px;font-family:var(--disp);font-weight:700;font-size:.88rem;color:var(--muted);cursor:pointer}
   .cat.on{background:var(--rose);border-color:var(--rose);color:#fff}
-  .filters{padding:12px 0 6px;display:flex;flex-direction:column;gap:7px;border-bottom:1px solid var(--line);margin-bottom:14px}
+  #lista.c-fralda .cat.on{background:#F27B9D;border-color:#F27B9D}
+  #lista.c-lencinho .cat.on{background:#3d8ac9;border-color:#3d8ac9}
+  #lista.c-formula .cat.on{background:#4FA95A;border-color:#4FA95A}
+  .filters{padding:12px 14px;display:flex;flex-direction:column;gap:7px;border-radius:14px;border:1px solid var(--line);margin:6px 0 16px;transition:background .15s}
+  #lista.c-fralda .filters{background:#FFF1F5;border-color:#F6D8E2}
+  #lista.c-lencinho .filters{background:#EDF5FC;border-color:#D6E7F4}
+  #lista.c-formula .filters{background:#EFF8ED;border-color:#D6ECD4}
   .frow{display:flex;flex-wrap:wrap;gap:7px;align-items:center}
   .flabel{font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--muted);min-width:60px}
   .chip{border:1.5px solid var(--line);background:#fff;color:var(--plum);border-radius:999px;padding:5px 12px;font-size:.84rem;font-weight:600;cursor:pointer;white-space:nowrap;font-family:var(--text)}
@@ -132,8 +138,12 @@
     .hcta{margin-inline:auto}
     .hero .baby{order:-1;width:158px;align-self:center;margin:0 auto 6px}
     .fab.show{display:inline-flex}
+    .sechead{gap:9px 10px}
+    .sechead h2{flex-basis:100%}
+    .sechead .melhor{order:2;margin-right:auto}
+    .sechead .verall{order:3;flex-basis:100%;margin-left:0;justify-content:center;padding:11px}
   }
-  @media(max-width:560px){.grid{grid-template-columns:repeat(auto-fill,minmax(156px,1fr));gap:10px}.ppf b{font-size:1.4rem}.wm{font-size:1.2rem}}
+  @media(max-width:560px){.grid{grid-template-columns:repeat(2,1fr);gap:10px}.sec{padding:14px 11px 16px}.ppf b{font-size:1.36rem}.wm{font-size:1.2rem}.thumb{height:104px}}
 </style>
 </head>
 <body>
@@ -258,9 +268,9 @@ async function load(){
 function card(p,best){
   const c=el('div','prod'+(best?' best':''));
   if(best) c.appendChild(el('span','bestbadge','🥇 menor preço'));
-  c.appendChild(el('span','mk '+p.marketplace,p.marketplace==='ml'?'Mercado Livre':p.marketplace));
   const th=el('div','thumb',p.imagem_url?'':'🧷'); if(p.imagem_url) th.style.backgroundImage=`url("${p.imagem_url}")`; c.appendChild(th);
   const badges=el('div','badges');
+  badges.appendChild(el('span','mk '+p.marketplace,p.marketplace==='ml'?'Mercado Livre':p.marketplace));
   if(p.desconto_pct) badges.appendChild(el('span','disc',`−${p.desconto_pct}%`));
   if(p.rating) badges.innerHTML+=`<span class="star"><b>★ ${p.rating.toFixed(1)}</b></span>`;
   if(p.oficial&&p.marketplace==='shopee') badges.appendChild(el('span','ofi','loja oficial'));
@@ -313,7 +323,7 @@ function goLista(c,filtros){
   cat=c; f={tam:'',tipo:'',marca:'',mkt:'',sort:'asc',...filtros};
   ev('lista',{categoria:c,filtro_valor:(filtros&&filtros.tam)||''});
   document.getElementById('home').style.display='none';
-  document.getElementById('lista').style.display='block';
+  const li=document.getElementById('lista');li.style.display='block';li.className='c-'+c;
   window.scrollTo(0,0);
   buildCats(); buildFilters(); render();
   updateFab();

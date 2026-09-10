@@ -36,10 +36,32 @@
   .plist .row .lab{max-width:none;white-space:normal;min-width:0}
   .foot{color:var(--muted);font-size:.76rem;margin-top:16px;text-align:center}
   a{color:var(--coral);text-decoration:none;font-weight:600}
+  /* login */
+  .login{position:fixed;inset:0;background:var(--bg);display:flex;align-items:center;justify-content:center;z-index:100;padding:20px}
+  .loginbox{background:#fff;border:1px solid var(--line);border-radius:18px;padding:26px 24px;width:100%;max-width:320px;box-shadow:0 8px 30px rgba(120,60,90,.12);display:flex;flex-direction:column;gap:10px}
+  .lg-title{font-family:var(--disp);font-weight:800;font-size:1.1rem;color:var(--plum);text-align:center;margin-bottom:6px}
+  .loginbox input{border:1.5px solid var(--line);border-radius:10px;padding:11px 13px;font-size:.95rem;font-family:var(--text)}
+  .loginbox button{background:linear-gradient(135deg,var(--rose),var(--coral));color:#fff;border:none;border-radius:12px;padding:11px;font-family:var(--disp);font-weight:800;cursor:pointer;font-size:.95rem}
+  .lg-err{color:#c0392b;font-size:.82rem;text-align:center;min-height:15px}
+  .wrap{display:none}
+  body.authed .wrap{display:block}
+  body.authed .login{display:none}
+  /* botão ver todas as metricas */
+  .toggleall{width:100%;background:#fff;border:1.5px solid var(--line);border-radius:12px;padding:10px;font-family:var(--disp);font-weight:800;font-size:.88rem;color:var(--coral);cursor:pointer;margin-bottom:16px}
+  .toggleall:hover{border-color:var(--rose);color:var(--rose)}
   @media(max-width:720px){.kpis{grid-template-columns:1fr 1fr}.grid2{grid-template-columns:1fr}}
 </style>
 </head>
 <body>
+<div id="login" class="login">
+  <form class="loginbox" onsubmit="return doLogin(event)">
+    <div class="lg-title">📊 busca fralda · painel</div>
+    <input id="lgUser" placeholder="Usuário" autocomplete="username">
+    <input id="lgPass" type="password" placeholder="Senha" autocomplete="current-password">
+    <button type="submit">Entrar</button>
+    <div class="lg-err" id="lgErr"></div>
+  </form>
+</div>
 <div class="wrap">
   <div class="top">
     <h1>📊 <span class="b">busca </span><span class="f">fralda</span> · painel</h1>
@@ -52,6 +74,8 @@
   </div>
 
   <div class="kpis" id="kpis"></div>
+
+  <button class="toggleall" id="toggleall" onclick="toggleAll()">Ver todas as métricas ⌄</button>
 
   <div class="grid2">
     <div class="box"><h2>🏙️ De onde acessam (estado)</h2><div id="estados"></div></div>
@@ -82,7 +106,12 @@
 <script>
 const SUPA='https://qkherjtsvakmpkxebuwy.supabase.co';
 const ANON='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFraGVyanRzdmFrbXBreGVidXd5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzU5Mjk0MjIsImV4cCI6MjA5MTUwNTQyMn0.8AHXoj74DeQ00ubcJ2en7TxX77K3KD5dHWdAJ8LBQBc';
-let DIAS=7, EV=[];
+let DIAS=7, EV=[], EXPAND=false;
+const HASH='02b07478038bc4d1f15aaa9c2dd4ec81a25c47188816ea642937e2bac4c0ac76';
+async function sha256(s){const b=await crypto.subtle.digest('SHA-256',new TextEncoder().encode(s));return [...new Uint8Array(b)].map(x=>x.toString(16).padStart(2,'0')).join('');}
+async function doLogin(e){e.preventDefault();const u=document.getElementById('lgUser').value.trim().toLowerCase();const p=document.getElementById('lgPass').value;const h=await sha256(u+':'+p);if(h===HASH){try{localStorage.setItem('bf_dash_ok','1');}catch(_){}entrar();}else{document.getElementById('lgErr').textContent='Usuário ou senha incorretos.';}return false;}
+function entrar(){document.body.classList.add('authed');carrega();}
+function toggleAll(){EXPAND=!EXPAND;document.getElementById('toggleall').textContent=EXPAND?'Ver top 5 ⌃':'Ver todas as métricas ⌄';render();}
 const el=(t,c,h)=>{const e=document.createElement(t);if(c)e.className=c;if(h!=null)e.innerHTML=h;return e;};
 const esc=s=>{const d=document.createElement('div');d.textContent=s==null?'':s;return d.innerHTML;};
 
@@ -101,7 +130,7 @@ function bars(id,pairs,cls,fmtLab){
   const box=document.getElementById(id);box.innerHTML='';
   if(!pairs.length){box.appendChild(el('div','empty','Sem dados no período.'));return;}
   const max=pairs[0][1];
-  pairs.slice(0,8).forEach(([lab,v])=>{
+  pairs.slice(0,EXPAND?9999:5).forEach(([lab,v])=>{
     const row=el('div','row'+(cls?' '+cls:''));
     row.appendChild(el('div','lab',esc(fmtLab?fmtLab(lab):lab)));
     const bar=el('div','bar');bar.appendChild(el('span'));bar.firstChild.style.width=Math.max(6,Math.round(v/max*100))+'%';row.appendChild(bar);
@@ -149,7 +178,9 @@ document.getElementById('periods').addEventListener('click',e=>{
   [...document.querySelectorAll('#periods button')].forEach(x=>x.classList.toggle('on',x===b));
   DIAS=parseInt(b.dataset.d,10);carrega();
 });
-carrega();
+// gate: só carrega depois do login
+let __ok=false;try{__ok=localStorage.getItem('bf_dash_ok')==='1';}catch(_){}
+if(__ok) entrar(); else { try{document.getElementById('lgUser').focus();}catch(_){ } }
 </script>
 </body>
 </html>
