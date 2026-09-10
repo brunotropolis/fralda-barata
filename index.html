@@ -224,9 +224,25 @@ const catData=c=>DATA.filter(p=>(p.categoria||'fralda')===c);
 function dedup(list){const v=new Set();return list.filter(p=>{const k=(p.titulo||'').toLowerCase().slice(0,40)+'|'+p.preco;if(v.has(k))return false;v.add(k);return true;});}
 const byPrice=list=>list.slice().sort((a,b)=>a.preco_por_fralda-b.preco_por_fralda);
 
+// ---------- tracking (acessos, cliques, filtros) ----------
+const EV_URL=SUPA+'/rest/v1/eventos';
+let SRC='direto', GEO={};
+function ev(tipo,d){
+  d=d||{};
+  const dev=matchMedia('(max-width:640px)').matches?'mobile':'desktop';
+  const row=[{tipo,categoria:d.categoria||null,marca:d.marca||null,marketplace:d.marketplace||null,produto_id:d.produto_id||null,filtro_tipo:d.filtro_tipo||null,filtro_valor:d.filtro_valor||null,source:SRC,cidade:GEO.cidade||null,estado:GEO.estado||null,pais:GEO.pais||null,device:dev,ua:(navigator.userAgent||'').slice(0,180)}];
+  try{fetch(EV_URL,{method:'POST',keepalive:true,headers:{apikey:ANON,'Content-Profile':'fraldas','content-type':'application/json','Prefer':'return=minimal'},body:JSON.stringify(row)});}catch(e){}
+}
+function initTrack(){
+  try{const u=new URLSearchParams(location.search);SRC=u.get('utm_source')||(document.referrer?new URL(document.referrer).hostname.replace(/^www\./,''):'')||'direto';}catch(e){SRC='direto';}
+  let cached=null; try{cached=sessionStorage.getItem('bf_geo');}catch(e){}
+  if(cached){ try{GEO=JSON.parse(cached);}catch(e){} ev('view'); }
+  else{ fetch('https://ipapi.co/json/').then(r=>r.json()).then(j=>{GEO={cidade:j.city||'',estado:j.region_code||j.region||'',pais:j.country_code||j.country||''};try{sessionStorage.setItem('bf_geo',JSON.stringify(GEO));}catch(e){}ev('view');}).catch(()=>ev('view')); }
+}
+
 async function load(){
   try{
-    const r=await fetch(`${SUPA}/rest/v1/produtos?select=marketplace,categoria,titulo,marca,tamanho,tipo,quantidade,unidade,preco,preco_original,desconto_pct,preco_por_fralda,rating,oficial,link_afiliado,imagem_url&order=preco_por_fralda.asc&limit=2000`,
+    const r=await fetch(`${SUPA}/rest/v1/produtos?select=id,marketplace,categoria,titulo,marca,tamanho,tipo,quantidade,unidade,preco,preco_original,desconto_pct,preco_por_fralda,rating,oficial,link_afiliado,imagem_url&order=preco_por_fralda.asc&limit=2000`,
       {headers:{apikey:ANON,'Accept-Profile':'fraldas'}});
     DATA=await r.json(); if(!Array.isArray(DATA)) throw 0;
     renderHome();
@@ -253,7 +269,12 @@ function card(p,best){
   c.appendChild(meta);
   const de=p.preco_original&&p.preco_original>p.preco?`<span class="de">${brl(p.preco_original)}</span>`:'';
   c.appendChild(el('div','tot',`<span class="pt">${brl(p.preco)}</span>${de} · <b>${p.quantidade}</b> ${un==='100g'?'g':un+'s'}`));
-  const a=el('a','ver');a.textContent='Ver oferta';a.href=p.link_afiliado;a.target='_blank';a.rel='nofollow noopener sponsored';c.appendChild(a);
+  const a=el('a','ver');a.textContent='Ver oferta';
+  let href=p.link_afiliado||'';
+  if(p.marketplace==='amazon'&&href) href+=(href.includes('?')?'&':'?')+'ascsubtag='+encodeURIComponent('bf-'+(p.categoria||'x')+'-'+SRC);
+  a.href=href;a.target='_blank';a.rel='nofollow noopener sponsored';
+  a.addEventListener('click',()=>ev('click',{categoria:p.categoria,marca:p.marca,marketplace:p.marketplace,produto_id:p.id}));
+  c.appendChild(a);
   return c;
 }
 
@@ -284,6 +305,7 @@ function renderHome(){
 // ---------- LISTA (lista completa + filtro por categoria) ----------
 function goLista(c,filtros){
   cat=c; f={tam:'',tipo:'',marca:'',mkt:'',sort:'asc',...filtros};
+  ev('lista',{categoria:c,filtro_valor:(filtros&&filtros.tam)||''});
   document.getElementById('home').style.display='none';
   document.getElementById('lista').style.display='block';
   window.scrollTo(0,0);
@@ -304,17 +326,17 @@ function buildFilters(){
     const tams=[...new Set(d.map(p=>p.tamanho).filter(Boolean))].sort((a,b)=>TAM_ORDER.indexOf(a)-TAM_ORDER.indexOf(b));
     const ft=document.getElementById('fTam');ft.innerHTML='';
     chip(ft,'','Todos',()=>{f.tam='';render();},f.tam);
-    tams.forEach(t=>chip(ft,t,t,()=>{f.tam=t;render();},f.tam));
+    tams.forEach(t=>chip(ft,t,t,()=>{f.tam=t;ev('filtro',{filtro_tipo:'tamanho',filtro_valor:t,categoria:cat});render();},f.tam));
     const fp=document.getElementById('fTipo');fp.innerHTML='';
     chip(fp,'','Todos',()=>{f.tipo='';render();},f.tipo);
-    TIPOS.filter(([v])=>d.some(p=>p.tipo===v)).forEach(([v,l])=>chip(fp,v,l,()=>{f.tipo=v;render();},f.tipo));
+    TIPOS.filter(([v])=>d.some(p=>p.tipo===v)).forEach(([v,l])=>chip(fp,v,l,()=>{f.tipo=v;ev('filtro',{filtro_tipo:'tipo',filtro_valor:v,categoria:cat});render();},f.tipo));
   }
   const marcas=[...new Set(d.map(p=>p.marca).filter(Boolean))].sort();
   const fm=document.getElementById('fMarca');fm.innerHTML='<option value="">Todas as marcas</option>';
   marcas.forEach(m=>{const o=el('option');o.value=m;o.textContent=m;if(m===f.marca)o.selected=true;fm.appendChild(o);});
-  fm.onchange=()=>{f.marca=fm.value;render();};
-  const mk=document.getElementById('fMkt');mk.value=f.mkt||'';mk.onchange=e=>{f.mkt=e.target.value;render();};
-  const fs=document.getElementById('fSort');fs.value=f.sort;fs.onchange=e=>{f.sort=e.target.value;render();};
+  fm.onchange=()=>{f.marca=fm.value;if(fm.value)ev('filtro',{filtro_tipo:'marca',filtro_valor:fm.value,categoria:cat});render();};
+  const mk=document.getElementById('fMkt');mk.value=f.mkt||'';mk.onchange=e=>{f.mkt=e.target.value;if(e.target.value)ev('filtro',{filtro_tipo:'loja',filtro_valor:e.target.value,categoria:cat});render();};
+  const fs=document.getElementById('fSort');fs.value=f.sort;fs.onchange=e=>{f.sort=e.target.value;ev('filtro',{filtro_tipo:'ordem',filtro_valor:e.target.value,categoria:cat});render();};
 }
 function chip(box,val,label,fn,cur){const c=el('button','chip'+((cur||'')===val?' on':''),label);c.dataset.val=val;c.onclick=()=>{[...box.children].forEach(x=>x.classList.toggle('on',x.dataset.val===val));fn();};box.appendChild(c);}
 
@@ -343,6 +365,7 @@ function updateFab(){
 window.addEventListener('scroll',updateFab,{passive:true});
 
 load();
+initTrack();
 </script>
 </body>
 </html>
