@@ -266,7 +266,7 @@
   <div id="home">
     <div class="hero">
       <div class="txt">
-        <span class="daily">Atualizado diariamente</span>
+        <span class="daily" id="daily">Atualizado diariamente</span>
         <h1>As melhores ofertas de fralda, <em>num lugar só</em></h1>
         <p>A gente compara Amazon, Mercado Livre e Shopee e mostra quanto custa <b>cada fralda</b>, só o que é bem avaliado.</p>
         <p class="pick">Comece pelo tamanho do bebê</p>
@@ -431,12 +431,24 @@ function initTrack(){
 
 async function load(){
   try{
-    const r=await fetch(`${SUPA}/rest/v1/produtos?select=id,marketplace,categoria,titulo,marca,tamanho,tipo,quantidade,unidade,preco,preco_original,desconto_pct,preco_por_fralda,rating,oficial,link_afiliado,imagem_url&order=preco_por_fralda.asc&limit=2000`,
+    const r=await fetch(`${SUPA}/rest/v1/produtos?select=id,marketplace,categoria,titulo,marca,tamanho,tipo,quantidade,unidade,preco,preco_original,desconto_pct,preco_por_fralda,rating,oficial,link_afiliado,imagem_url,atualizado_em&order=preco_por_fralda.asc&limit=2000`,
       {headers:{apikey:ANON,'Accept-Profile':'fraldas'}});
     DATA=await r.json(); if(!Array.isArray(DATA)) throw 0;
     DATA=DATA.filter(keepProduct);
+    mostrarAtualizacao();
     renderHome();
   }catch(e){ document.getElementById('secs').innerHTML='<div class="msg">Não deu pra carregar agora. Recarregue a página.</div>'; }
+}
+// data real da última coleta (produto mais recente) no badge do hero
+function mostrarAtualizacao(){
+  const el=document.getElementById('daily'); if(!el||!DATA.length) return;
+  let ts=0; DATA.forEach(p=>{ const t=p.atualizado_em?new Date(p.atualizado_em).getTime():0; if(t>ts) ts=t; });
+  if(!ts) return;
+  const d=new Date(ts), ag=new Date();
+  const hh=String(d.getHours()).padStart(2,'0'), mm=String(d.getMinutes()).padStart(2,'0');
+  const hoje=d.getDate()===ag.getDate()&&d.getMonth()===ag.getMonth()&&d.getFullYear()===ag.getFullYear();
+  const dd=String(d.getDate()).padStart(2,'0'), mo=String(d.getMonth()+1).padStart(2,'0');
+  el.textContent = hoje ? `Atualizado hoje às ${hh}h${mm}` : `Atualizado em ${dd}/${mo} às ${hh}h${mm}`;
 }
 
 const _skipBrand=/^(kit|kits|fralda|fraldas|pacote|pacotao|pacotes|combo|leve|pague|menos|mais|compre|super|mega|hiper|hyper|jumbo|premium|descartavel|descartaveis|tira|tiras|un|und|unid|unidade|unidades|com|para|tamanho|gigante|economico|economica|atacado|promocao|oferta|recem|nascido|protecao|protect|toque|seco|sec|absorcao|noturna|dia|noite|infantil|bebe|bebes|caixa|pack|toalha|toalhas|umedecida|umedecidas|umedecido|umedecidos|lenco|lencos|folha|folhas|higiene|lata|latas|composto|lacteo|leite|formula|ultra|plus|agua|neonato|nenem|menino|menina|roupa|intima|calca|algodao|aloe|vera|perfume|hipoalergenico|baby|lavanda|camomila|erva|classic|fresh|clean|soft|wipes|extra|natural|suave|pura|puro|pure|kids|tampa|flip|top|the|byn|care|cha|care|linha|tira|folhas|super|maxi|mini|plus)$/i;
