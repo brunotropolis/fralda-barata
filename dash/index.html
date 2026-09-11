@@ -18,7 +18,9 @@
   .periods{margin-left:auto;display:flex;gap:6px;flex-wrap:wrap}
   .periods button{background:#fff;border:1.5px solid var(--line);border-radius:999px;padding:6px 14px;font-family:var(--disp);font-weight:700;font-size:.82rem;color:var(--muted);cursor:pointer}
   .periods button.on{background:var(--rose);border-color:var(--rose);color:#fff}
-  .kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:18px}
+  .kpis{display:grid;grid-template-columns:repeat(5,1fr);gap:12px;margin-bottom:18px}
+  .kpi:first-child{background:linear-gradient(135deg,#EAF7EE,#DCF0E4);border-color:#bfe3cb}
+  .kpi:first-child .v{color:#2f8a4e}
   .kpi{background:linear-gradient(135deg,#fff,#FFF0E8);border:1px solid var(--line);border-radius:16px;padding:15px 16px;box-shadow:0 3px 12px rgba(120,60,90,.07)}
   .kpi .v{font-family:var(--disp);font-weight:800;font-size:1.7rem;color:var(--price);line-height:1}
   .kpi .l{font-size:.76rem;color:var(--muted);font-weight:700;margin-top:5px;text-transform:uppercase;letter-spacing:.4px}
@@ -116,7 +118,7 @@ const el=(t,c,h)=>{const e=document.createElement(t);if(c)e.className=c;if(h!=nu
 const esc=s=>{const d=document.createElement('div');d.textContent=s==null?'':s;return d.innerHTML;};
 
 async function carrega(){
-  let url=`${SUPA}/rest/v1/eventos?select=tipo,categoria,marca,marketplace,produto_id,filtro_tipo,filtro_valor,source,cidade,estado,device,ts&order=ts.desc&limit=10000`;
+  let url=`${SUPA}/rest/v1/eventos?select=tipo,categoria,marca,marketplace,produto_id,filtro_tipo,filtro_valor,source,cidade,estado,device,visitor_id,ts&order=ts.desc&limit=10000`;
   if(DIAS>0){const since=new Date(Date.now()-DIAS*864e5).toISOString();url+=`&ts=gte.${since}`;}
   try{
     const r=await fetch(url,{headers:{apikey:ANON,'Accept-Profile':'fraldas'}});
@@ -149,7 +151,9 @@ function render(){
   const nAcess=views.length, nClick=clicks.length;
   const taxa=nAcess?Math.round(nClick/nAcess*100):0;
   const cidUnicas=new Set(views.map(v=>v.cidade).filter(Boolean)).size;
-  const kpis=[['Acessos',nAcess],['Cliques em ofertas',nClick],['Taxa de clique',taxa+'%'],['Cidades',cidUnicas]];
+  // usuários únicos = navegadores distintos (id anônimo); dedupa quem atualiza a página
+  const unicos=new Set(EV.map(e=>e.visitor_id).filter(Boolean)).size;
+  const kpis=[['Usuários únicos',unicos],['Acessos',nAcess],['Cliques em ofertas',nClick],['Taxa de clique',taxa+'%'],['Cidades',cidUnicas]];
   const kb=document.getElementById('kpis');kb.innerHTML='';
   kpis.forEach(([l,v])=>{const c=el('div','kpi');c.appendChild(el('div','v',v));c.appendChild(el('div','l',l));kb.appendChild(c);});
 

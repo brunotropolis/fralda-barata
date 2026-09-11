@@ -420,10 +420,12 @@ const byPrice=list=>list.slice().sort((a,b)=>_hasD(a)-_hasD(b)||a.preco_por_fral
 // ---------- tracking (acessos, cliques, filtros) ----------
 const EV_URL=SUPA+'/rest/v1/eventos';
 let SRC='direto', GEO={};
+// id anônimo por navegador (usuário único) — sem IP, sem dado pessoal; dedupa quem atualiza a página
+const VID=(function(){ try{ let v=localStorage.getItem('bf_vid'); if(!v){ v=(crypto.randomUUID?crypto.randomUUID():'v'+Date.now()+Math.random().toString(36).slice(2)); localStorage.setItem('bf_vid',v);} return v; }catch(e){ return null; } })();
 function ev(tipo,d){
   d=d||{};
   const dev=matchMedia('(max-width:640px)').matches?'mobile':'desktop';
-  const row=[{tipo,categoria:d.categoria||null,marca:d.marca||null,marketplace:d.marketplace||null,produto_id:d.produto_id||null,filtro_tipo:d.filtro_tipo||null,filtro_valor:d.filtro_valor||null,source:SRC,cidade:GEO.cidade||null,estado:GEO.estado||null,pais:GEO.pais||null,device:dev,ua:(navigator.userAgent||'').slice(0,180)}];
+  const row=[{tipo,categoria:d.categoria||null,marca:d.marca||null,marketplace:d.marketplace||null,produto_id:d.produto_id||null,filtro_tipo:d.filtro_tipo||null,filtro_valor:d.filtro_valor||null,source:SRC,cidade:GEO.cidade||null,estado:GEO.estado||null,pais:GEO.pais||null,device:dev,visitor_id:VID,ua:(navigator.userAgent||'').slice(0,180)}];
   try{fetch(EV_URL,{method:'POST',keepalive:true,headers:{apikey:ANON,'Content-Profile':'fraldas','content-type':'application/json','Prefer':'return=minimal'},body:JSON.stringify(row)});}catch(e){}
 }
 function initTrack(){
