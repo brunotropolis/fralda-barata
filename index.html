@@ -93,6 +93,8 @@
   .meta{display:flex;flex-wrap:wrap;gap:5px}
   .tag{font-size:.69rem;font-weight:700;background:#F7EEF1;color:#8a6b78;padding:2px 8px;border-radius:6px}
   .tag.size{background:#FFF0E8;color:var(--coral)}
+  .tag.ftipo{background:#E7F0FB;color:#2f5f9e;font-weight:800;border:1px solid #bcd3ee}
+  .tag.ftipo.comp{background:#FBEFDF;color:#a86e22;border-color:#ecd2a8}
   .tot{font-size:.82rem;color:#6a5a63;font-weight:600;margin-top:1px}
   .tot .pt{font-family:var(--disp);font-weight:800;color:var(--plum);font-size:1.02rem}
   .tot b{color:var(--plum);font-weight:800}
@@ -247,6 +249,7 @@
       <div class="ddrow">
         <div class="dd" id="ddTam"></div>
         <div class="dd" id="ddTipo"></div>
+        <div class="dd" id="ddFtipo"></div>
         <div class="dd" id="ddFase"></div>
         <div class="dd" id="ddEspec"></div>
         <div class="dd" id="ddMarca"></div>
@@ -328,6 +331,13 @@ function faseOf(p){
 }
 const ESPECIAIS=[['Soja',/\bsoja\b|soy|isomil/],['Sem lactose',/sem\s*lactose|zero\s*lactose|deslactos|\bsl\b/],['Refluxo (AR)',/anti[\s-]*reflux|\brefluxo\b|espessad|\bar\b/],['Alergia (HA)',/hipoalerg|\bh\.?a\.?\b|pepti|amino\s*[aá]cid|extensam|nutramigen|pregomin|althera|alfar[eé]/],['Sensitive',/sensitive|conforto|comfor|desconforto|c[óo]lica|anti[\s-]*g[áa]s|\bgases\b/],['Prematuro',/prematuro|\bpr[eé][\s-]*termo\b/]];
 function especOf(p){ if((p.categoria||'')!=='formula') return []; const t=' '+(p.titulo||'').toLowerCase()+' '; return ESPECIAIS.filter(([,re])=>re.test(t)).map(([n])=>n); }
+// fórmula infantil (0-12m, regulada) × composto lácteo (+1 ano) — categorias diferentes
+function formulaTipo(p){
+  if((p.categoria||'')!=='formula') return null;
+  const t=(p.titulo||'').toLowerCase();
+  if(/composto\s*l[áa]cteo|ninho\s*fases|\bfases\b|milnutri|crescimento|acima\s*de\s*1\s*ano|ap[óo]s\s*1\s*ano/.test(t) || faseOf(p)==='3' || /\b[13]\s*\+/.test(t)) return 'Composto lácteo';
+  return 'Fórmula infantil';
+}
 function keepProduct(p){
   if(!(p.preco>0)) return false;
   const cat=(p.categoria||'fralda'), t=(p.titulo||'').toLowerCase();
@@ -408,6 +418,7 @@ function card(p,best){
   const meta=el('div','meta');
   const _m=marcaOf(p); if(_m) meta.appendChild(el('span','tag',esc(_m)));
   if(p.tipo&&p.tipo!=='normal') meta.appendChild(el('span','tag',p.tipo[0].toUpperCase()+p.tipo.slice(1)));
+  const _ft=formulaTipo(p); if(_ft) meta.appendChild(el('span','tag ftipo'+(_ft==='Composto lácteo'?' comp':''),_ft));
   if(meta.children.length) c.appendChild(meta);
   const _t=tamOf(p); if(_t) c.appendChild(el('div','szline',`<span class="tag size">${esc(_t)}</span>`));
   if(p.desconto_pct) c.appendChild(el('div','discp',`${p.desconto_pct}% de desconto`));
@@ -449,7 +460,7 @@ function renderHome(){
 
 // ---------- LISTA (lista completa + filtro por categoria) ----------
 function goLista(c,filtros){
-  cat=c; f={tams:[],tipos:[],marcas:[],mkts:[],fases:[],espec:[],sort:'asc',...filtros};
+  cat=c; f={tams:[],tipos:[],marcas:[],mkts:[],fases:[],espec:[],ftipos:[],sort:'asc',...filtros};
   ev('lista',{categoria:c,filtro_valor:(filtros&&filtros.tams&&filtros.tams[0])||''});
   document.getElementById('home').style.display='none';
   document.getElementById('navInicio').hidden=false;
@@ -478,9 +489,12 @@ function buildFilters(){
   const lojas=[['amazon','Amazon'],['ml','Mercado Livre'],['shopee','Shopee']].filter(([v])=>d.some(p=>p.marketplace===v));
   makeDD('ddMkt','Loja','mkts',lojas);
   const isFormula=cat==='formula';
+  document.getElementById('ddFtipo').style.display=isFormula?'':'none';
   document.getElementById('ddFase').style.display=isFormula?'':'none';
   document.getElementById('ddEspec').style.display=isFormula?'':'none';
   if(isFormula){
+    const ftipos=[...new Set(d.map(formulaTipo).filter(Boolean))].sort();
+    makeDD('ddFtipo','Tipo','ftipos',ftipos.map(x=>[x,x]));
     const ord=['1','2','3','Pré'];
     const fases=[...new Set(d.map(faseOf).filter(Boolean))].sort((a,b)=>ord.indexOf(a)-ord.indexOf(b));
     makeDD('ddFase','Fase','fases',fases.map(x=>[x,x==='Pré'?'Pré / prematuro':'Fase '+x+(x==='1'?' · 0-6m':x==='2'?' · 6-12m':' · 1-3 anos')]));
@@ -541,7 +555,7 @@ function ddOpen(dd,panel){closeAllDD();panel.hidden=false;dd.classList.add('open
 function ddHead(label,onClear){const h=el('div','ddhead');h.appendChild(el('span',null,label));const r=el('div','ddheadr');if(onClear){const c=el('button','ddclear','Limpar');c.onclick=e=>{e.stopPropagation();onClear();};r.appendChild(c);}const x=el('button','ddx','Pronto');x.onclick=e=>{e.stopPropagation();closeAllDD();};r.appendChild(x);h.appendChild(r);return h;}
 
 function render(){
-  let list=catData(cat).filter(p=>(!f.tams.length||f.tams.includes(tamOf(p)))&&(!f.tipos.length||f.tipos.includes(p.tipo))&&(!f.marcas.length||f.marcas.includes(marcaOf(p)))&&(!f.mkts.length||f.mkts.includes(p.marketplace))&&(!f.fases.length||f.fases.includes(faseOf(p)))&&(!f.espec.length||f.espec.some(e=>especOf(p).includes(e))));
+  let list=catData(cat).filter(p=>(!f.tams.length||f.tams.includes(tamOf(p)))&&(!f.tipos.length||f.tipos.includes(p.tipo))&&(!f.marcas.length||f.marcas.includes(marcaOf(p)))&&(!f.mkts.length||f.mkts.includes(p.marketplace))&&(!f.fases.length||f.fases.includes(faseOf(p)))&&(!f.espec.length||f.espec.some(e=>especOf(p).includes(e)))&&(!f.ftipos.length||f.ftipos.includes(formulaTipo(p))));
   const cmp=f.sort==='desconto'?(a,b)=>(b.desconto_pct||0)-(a.desconto_pct||0):f.sort==='asc'?(a,b)=>a.preco_por_fralda-b.preco_por_fralda:(a,b)=>b.preco_por_fralda-a.preco_por_fralda;
   list.sort((a,b)=>_hasD(a)-_hasD(b)||cmp(a,b));
   list=dedup(list);
