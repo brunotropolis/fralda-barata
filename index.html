@@ -37,6 +37,8 @@
   .navlinks{margin-left:auto;display:flex;gap:6px}
   .navlinks button{background:#fff;border:1.5px solid var(--line);border-radius:10px;padding:8px 13px;font-size:.83rem;font-weight:700;cursor:pointer;color:var(--coral);font-family:var(--text)}
   .navlinks button:hover{border-color:var(--rose);color:var(--rose)}
+  .navlinks .navback{padding:10px 18px;font-size:.9rem;font-weight:800;color:var(--plum);border-color:var(--rose)}
+  .navlinks .navback:hover{background:#FFF0F4;color:var(--price);border-color:var(--rose)}
   /* hero */
   .hero{background:linear-gradient(135deg,#FFE9DD 0%,#FCDCE6 100%);border-radius:26px;padding:26px 30px;margin-top:6px;display:flex;align-items:center;gap:20px;overflow:hidden}
   .hero .txt{flex:1;min-width:0}
@@ -102,7 +104,7 @@
   .ver:hover{background:var(--cta-d)}
   /* lista */
   #lista{display:none}
-  .backrow{display:flex;align-items:center;gap:12px;margin:16px 0 4px;flex-wrap:wrap}
+  .backrow{display:flex;align-items:center;gap:12px;margin:4px 0 8px;flex-wrap:wrap}
   .back{background:#fff;border:1.5px solid var(--line);border-radius:10px;padding:8px 13px;font-weight:700;font-size:.85rem;cursor:pointer;color:var(--plum);font-family:var(--text)}
   .back:hover{border-color:var(--rose)}
   .cats{display:flex;gap:8px;flex-wrap:wrap}
@@ -111,7 +113,7 @@
   #lista.c-fralda .cat.on{background:#F27B9D;border-color:#F27B9D}
   #lista.c-lencinho .cat.on{background:#3d8ac9;border-color:#3d8ac9}
   #lista.c-formula .cat.on{background:#4FA95A;border-color:#4FA95A}
-  .filters{padding:13px 15px;display:flex;flex-direction:column;gap:11px;border-radius:14px;border:1px solid var(--line);margin:6px 0 16px;transition:background .15s}
+  .filters{padding:13px 15px;display:flex;flex-direction:column;gap:11px;border-radius:14px;border:1px solid var(--line);margin:0 0 16px;transition:background .15s}
   .filters .flabel{color:#8a5566}
   #lista.c-fralda .filters{background:#FBD9E4;border-color:#F1BFD1}
   #lista.c-lencinho .filters{background:#D8E9F8;border-color:#BAD8EF}
@@ -215,7 +217,8 @@
       <span class="wm"><span class="b">busca </span><span class="f">fralda</span></span>
     </a>
     <div class="navlinks">
-      <button onclick="document.getElementById('comofunciona').scrollIntoView({behavior:'smooth'})">Como funciona</button>
+      <button class="navback" id="navInicio" onclick="goHome()" hidden>← Início</button>
+      <button class="navcomo" onclick="document.getElementById('comofunciona').scrollIntoView({behavior:'smooth'})">Como funciona</button>
     </div>
   </div>
 
@@ -236,7 +239,6 @@
   <!-- LISTA -->
   <div id="lista">
     <div class="backrow">
-      <button class="back" onclick="goHome()">← Início</button>
       <div class="cats" id="cats"></div>
     </div>
     <div class="filters" id="filters">
@@ -422,6 +424,7 @@ function card(p,best){
 function renderHome(){
   document.getElementById('home').style.display='';
   document.getElementById('lista').style.display='none';
+  document.getElementById('navInicio').hidden=true;
   document.getElementById('fab').classList.remove('show');
   window.scrollTo(0,0);
   const tams=[...new Set(catData('fralda').map(tamOf).filter(Boolean))].sort((a,b)=>TAM_ORDER.indexOf(a)-TAM_ORDER.indexOf(b));
@@ -447,6 +450,7 @@ function goLista(c,filtros){
   cat=c; f={tams:[],tipos:[],marcas:[],mkts:[],fases:[],espec:[],sort:'asc',...filtros};
   ev('lista',{categoria:c,filtro_valor:(filtros&&filtros.tams&&filtros.tams[0])||''});
   document.getElementById('home').style.display='none';
+  document.getElementById('navInicio').hidden=false;
   const li=document.getElementById('lista');li.style.display='block';li.className='c-'+c;
   window.scrollTo(0,0);
   buildCats(); buildFilters(); render();
