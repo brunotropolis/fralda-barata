@@ -82,8 +82,8 @@
   .disc{background:#FCE9EE;color:var(--price);font-size:.72rem;font-weight:800;padding:2px 7px;border-radius:6px}
   .star{background:#FFF3E9;color:#a8763b;font-size:.72rem;font-weight:700;padding:2px 7px;border-radius:6px}
   .star b{color:#E9A23C}
-  .prod.oficial .thumb{box-shadow:inset 0 0 0 2.5px #66b579}
-  .ofi{position:absolute;bottom:9px;left:50%;transform:translateX(-50%);background:#4FA95A;color:#fff;font-size:.57rem;font-weight:800;text-transform:uppercase;letter-spacing:.3px;padding:2px 9px;border-radius:999px;white-space:nowrap;box-shadow:0 2px 7px rgba(79,169,90,.4);z-index:2}
+  .prod.oficial .thumb{box-shadow:inset 0 0 0 2px #EC912F}
+  .ofi{position:absolute;bottom:9px;left:50%;transform:translateX(-50%);background:#EC912F;color:#fff;font-size:.57rem;font-weight:800;text-transform:uppercase;letter-spacing:.3px;padding:2px 9px;border-radius:999px;white-space:nowrap;box-shadow:0 2px 7px rgba(210,120,30,.42);z-index:2}
   .ppf{display:flex;align-items:baseline;gap:5px;margin-top:1px}
   .ppf b{font-family:var(--disp);font-size:1.58rem;font-weight:800;color:var(--price);letter-spacing:-.5px}
   .ppf small{color:var(--muted);font-size:.76rem;font-weight:700}
@@ -96,7 +96,8 @@
   .tot b{color:var(--plum);font-weight:800}
   .tot .de{text-decoration:line-through;margin-right:7px;color:#c98a9c;font-weight:700;font-size:.86rem}
   .tot .qt::before{content:"·";margin:0 5px 0 7px;color:var(--muted);font-weight:600}
-  .discp{align-self:flex-start;font-family:var(--disp);font-weight:800;font-size:.79rem;color:#2b7a44;background:#E3F2E7;padding:3px 10px;border-radius:7px;letter-spacing:.1px;margin-top:1px}
+  .discp{align-self:flex-start;font-family:var(--disp);font-weight:800;font-size:.79rem;color:#2b7a44;background:#E3F2E7;padding:3px 10px;border-radius:7px;letter-spacing:.1px;margin-top:1px;white-space:nowrap}
+  .szline{margin-top:1px}
   .ver{margin-top:auto;display:block;text-align:center;background:var(--cta);color:#fff;font-weight:800;text-decoration:none;padding:10px;border-radius:12px;font-size:.9rem;transition:.12s;font-family:var(--disp)}
   .ver:hover{background:var(--cta-d)}
   /* lista */
@@ -171,8 +172,9 @@
     /* loja + nota numa linha só (desconto saiu daqui) */
     .badges{flex-wrap:nowrap;gap:5px;overflow:hidden}
     /* cards: tamanho / preco riscado / preco / quantidade um por linha */
-    .meta{flex-direction:column;align-items:flex-start;gap:4px}
-    .tag.size{background:none;padding:0;color:#7a5c69;font-weight:700}
+    .meta{flex-wrap:wrap;gap:5px}
+    .meta .tag{font-size:.63rem;padding:2px 7px}
+    .tag.size{background:none;padding:0;color:#7a5c69;font-weight:700;font-size:.78rem}
     .tag.size::before{content:"Tamanho: "}
     .tot{display:flex;flex-direction:column;align-items:flex-start;gap:1px;line-height:1.3}
     .tot .pt{font-size:1.12rem}
@@ -265,7 +267,31 @@ const ANON='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI
 const TAM_ORDER=['RN','RN+','P','M','G','XG','XXG','XXXG','XXXG+','PP','GG'];
 const TIPOS=[['normal','Normal'],['pants','Pants'],['piscina','Piscina']];
 const CATS=[['fralda','🧷','Fraldas','FRALDA'],['lencinho','💧','Lenços','LENÇOS'],['formula','🍼','Fórmula','FÓRMULA']];
-const TOP=20;
+const TOP=10;
+const KNOWN_BRANDS=['Turma da Mônica','Personal Baby','Turminha da Bagunça','Cotton Baby','Little Toes','Pampers','Huggies','MamyPoko','Babysec','Cremer','Enzzo','Hipopó','Pom Pom','Personal','Mili','Sapeka','Ovelhinha','Chameguinho','Limpinho','Dryces','Nestogeno','Aptamil','Milnutri','Enfamil','Similac','Nestlé','Danone','Ninho','Nan','Itambé','Nutrilon','Johnson'].sort((a,b)=>b.length-a.length);
+function marcaOf(p){
+  if(p.marca&&p.marca!=='?'&&(''+p.marca).trim().length>1) return p.marca;
+  const t=' '+(p.titulo||'').toLowerCase()+' ';
+  for(const b of KNOWN_BRANDS){ if(t.includes(' '+b.toLowerCase())) return b; }
+  return (p.categoria||'fralda')==='fralda' ? brandFromTitle(p.titulo) : '';
+}
+function sizeFromTitle(t){
+  let m=(t||'').match(/tamanho\s*:?\s*(rn\s*\+|xxxg|xxg|xg|gg|g|m|pp|p|rn)\b/i);
+  if(!m) m=(t||'').match(/\b(xxxg|xxg|xg|rn\+?)\b/i);
+  if(!m) return null;
+  const s=m[1].toUpperCase().replace(/\s+/g,'');
+  return TAM_ORDER.includes(s)?s:null;
+}
+function tamOf(p){ return p.tamanho || ((p.categoria||'fralda')==='fralda'?sizeFromTitle(p.titulo):null); }
+function keepProduct(p){
+  if(!(p.preco>0)) return false;
+  if((p.categoria||'fralda')==='fralda'){
+    const t=(p.titulo||'').toLowerCase();
+    if(/\bpano\b|de pano|cremer luxo|reutiliz|geladinha/.test(t)) return false;
+    if(p.preco_por_fralda!=null && p.preco_por_fralda>4.5) return false;
+  }
+  return true;
+}
 let DATA=[], cat='fralda', f={tam:'',tipo:'',marca:'',mkt:'',sort:'asc'};
 
 const brl=n=>'R$ '+Number(n).toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2});
@@ -274,7 +300,8 @@ const el=(t,c,h)=>{const e=document.createElement(t);if(c)e.className=c;if(h!=nu
 const esc=s=>{const d=el('div');d.textContent=s||'';return d.innerHTML;};
 const catData=c=>DATA.filter(p=>(p.categoria||'fralda')===c);
 function dedup(list){const v=new Set();return list.filter(p=>{const k=(p.titulo||'').toLowerCase().slice(0,40)+'|'+p.preco;if(v.has(k))return false;v.add(k);return true;});}
-const byPrice=list=>list.slice().sort((a,b)=>a.preco_por_fralda-b.preco_por_fralda);
+const _hasD=p=>p.desconto_pct?0:1;
+const byPrice=list=>list.slice().sort((a,b)=>_hasD(a)-_hasD(b)||a.preco_por_fralda-b.preco_por_fralda);
 
 // ---------- tracking (acessos, cliques, filtros) ----------
 const EV_URL=SUPA+'/rest/v1/eventos';
@@ -303,6 +330,7 @@ async function load(){
     const r=await fetch(`${SUPA}/rest/v1/produtos?select=id,marketplace,categoria,titulo,marca,tamanho,tipo,quantidade,unidade,preco,preco_original,desconto_pct,preco_por_fralda,rating,oficial,link_afiliado,imagem_url&order=preco_por_fralda.asc&limit=2000`,
       {headers:{apikey:ANON,'Accept-Profile':'fraldas'}});
     DATA=await r.json(); if(!Array.isArray(DATA)) throw 0;
+    DATA=DATA.filter(keepProduct);
     renderHome();
   }catch(e){ document.getElementById('secs').innerHTML='<div class="msg">Não deu pra carregar agora. Recarregue a página.</div>'; }
 }
@@ -329,10 +357,10 @@ function card(p,best){
   const ttxt=(p.titulo||'').length>52?(p.titulo).slice(0,52).replace(/\s+\S*$/,'').trim()+'…':(p.titulo||'');
   c.appendChild(el('div','tt',esc(ttxt)));
   const meta=el('div','meta');
-  meta.appendChild(el('span','tag',esc(p.marca||brandFromTitle(p.titulo))));
-  if(p.tamanho)meta.appendChild(el('span','tag size',p.tamanho));
-  if(p.tipo&&p.tipo!=='normal')meta.appendChild(el('span','tag',p.tipo));
-  c.appendChild(meta);
+  const _m=marcaOf(p); if(_m) meta.appendChild(el('span','tag',esc(_m)));
+  if(p.tipo&&p.tipo!=='normal') meta.appendChild(el('span','tag',p.tipo[0].toUpperCase()+p.tipo.slice(1)));
+  if(meta.children.length) c.appendChild(meta);
+  const _t=tamOf(p); if(_t) c.appendChild(el('div','szline',`<span class="tag size">${esc(_t)}</span>`));
   if(p.desconto_pct) c.appendChild(el('div','discp',`${p.desconto_pct}% de desconto`));
   const de=p.preco_original&&p.preco_original>p.preco?`<span class="de">${brl(p.preco_original)}</span>`:'';
   c.appendChild(el('div','tot',`${de}<span class="pt">${brl(p.preco)}</span><span class="qt"><b>${p.quantidade}</b> ${un==='100g'?'g':un+'s'}</span>`));
@@ -351,7 +379,7 @@ function renderHome(){
   document.getElementById('lista').style.display='none';
   document.getElementById('fab').classList.remove('show');
   window.scrollTo(0,0);
-  const tams=[...new Set(catData('fralda').map(p=>p.tamanho).filter(Boolean))].sort((a,b)=>TAM_ORDER.indexOf(a)-TAM_ORDER.indexOf(b));
+  const tams=[...new Set(catData('fralda').map(tamOf).filter(Boolean))].sort((a,b)=>TAM_ORDER.indexOf(a)-TAM_ORDER.indexOf(b));
   const hs=document.getElementById('heroSizes');hs.innerHTML='';
   tams.forEach(t=>{const b=el('button','sz',t);b.onclick=()=>goLista('fralda',{tams:[t]});hs.appendChild(b);});
   const secs=document.getElementById('secs');secs.innerHTML='';
@@ -390,11 +418,11 @@ function buildFilters(){
   document.getElementById('ddTam').style.display=isFralda?'':'none';
   document.getElementById('ddTipo').style.display=isFralda?'':'none';
   if(isFralda){
-    const tams=[...new Set(d.map(p=>p.tamanho).filter(Boolean))].sort((a,b)=>TAM_ORDER.indexOf(a)-TAM_ORDER.indexOf(b));
+    const tams=[...new Set(d.map(tamOf).filter(Boolean))].sort((a,b)=>TAM_ORDER.indexOf(a)-TAM_ORDER.indexOf(b));
     makeDD('ddTam','Tamanho','tams',tams.map(t=>[t,t]));
     makeDD('ddTipo','Tipo','tipos',TIPOS.filter(([v])=>d.some(p=>p.tipo===v)));
   }
-  const marcas=[...new Set(d.map(p=>p.marca).filter(Boolean))].sort();
+  const marcas=[...new Set(d.map(marcaOf).filter(Boolean))].sort();
   makeDD('ddMarca','Marca','marcas',marcas.map(m=>[m,m]));
   const lojas=[['amazon','Amazon'],['ml','Mercado Livre'],['shopee','Shopee']].filter(([v])=>d.some(p=>p.marketplace===v));
   makeDD('ddMkt','Loja','mkts',lojas);
@@ -432,9 +460,9 @@ function makeDD(id,label,group,items){
 function closeAllDD(){document.querySelectorAll('.dd').forEach(d=>{d.classList.remove('open');const p=d.querySelector('.ddpanel');if(p)p.hidden=true;});}
 
 function render(){
-  let list=catData(cat).filter(p=>(!f.tams.length||f.tams.includes(p.tamanho))&&(!f.tipos.length||f.tipos.includes(p.tipo))&&(!f.marcas.length||f.marcas.includes(p.marca))&&(!f.mkts.length||f.mkts.includes(p.marketplace)));
-  if(f.sort==='desconto') list.sort((a,b)=>(b.desconto_pct||0)-(a.desconto_pct||0));
-  else list.sort((a,b)=>f.sort==='asc'?a.preco_por_fralda-b.preco_por_fralda:b.preco_por_fralda-a.preco_por_fralda);
+  let list=catData(cat).filter(p=>(!f.tams.length||f.tams.includes(tamOf(p)))&&(!f.tipos.length||f.tipos.includes(p.tipo))&&(!f.marcas.length||f.marcas.includes(marcaOf(p)))&&(!f.mkts.length||f.mkts.includes(p.marketplace)));
+  const cmp=f.sort==='desconto'?(a,b)=>(b.desconto_pct||0)-(a.desconto_pct||0):f.sort==='asc'?(a,b)=>a.preco_por_fralda-b.preco_por_fralda:(a,b)=>b.preco_por_fralda-a.preco_por_fralda;
+  list.sort((a,b)=>_hasD(a)-_hasD(b)||cmp(a,b));
   list=dedup(list);
   const g=document.getElementById('grid');g.innerHTML='';
   const msg=document.getElementById('msg');
