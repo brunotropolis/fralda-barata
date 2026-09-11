@@ -30,7 +30,7 @@
   .wrap{max-width:1080px;margin:0 auto;padding:0 18px}
   /* topbar */
   .bar{display:flex;align-items:center;gap:12px;padding:14px 0}
-  .brand{display:flex;align-items:center;gap:11px;text-decoration:none;cursor:pointer}
+  .brand{display:flex;align-items:center;gap:4px;text-decoration:none;cursor:pointer}
   .brand svg{width:42px;height:42px;flex-shrink:0}
   .wm{font-family:var(--disp);font-weight:800;font-size:1.42rem;line-height:1;letter-spacing:-.5px}
   .wm .b{color:var(--plum)}.wm .f{color:var(--coral)}
@@ -120,11 +120,14 @@
   .ddrow{display:flex;flex-wrap:wrap;gap:9px;align-items:center}
   .dd{position:relative}
   .ddbtn{border:1.5px solid var(--line);background:#fff;color:var(--plum);border-radius:10px;padding:8px 13px;font-size:.84rem;font-weight:600;cursor:pointer;font-family:var(--text);display:inline-flex;align-items:center;gap:7px;white-space:nowrap}
-  .ddbtn .ddcar{color:var(--muted);font-size:.7rem;transition:transform .15s}
+  .ddbtn .ddcar{color:var(--plum);font-size:.8rem;opacity:.75;transition:transform .15s}
   .dd.open .ddbtn .ddcar{transform:rotate(180deg)}
   .dd.on .ddbtn{border-color:var(--rose);background:#FFF0F4;color:var(--price)}
   .dd.on .ddbtn b{background:var(--rose);color:#fff;border-radius:999px;padding:0 6px;font-size:.72rem;margin-left:1px}
-  .ddpanel{position:absolute;top:calc(100% + 6px);left:0;z-index:50;background:#fff;border:1px solid var(--line);border-radius:12px;box-shadow:0 10px 28px rgba(120,60,80,.18);padding:7px;min-width:180px;max-height:320px;overflow:auto;display:flex;flex-direction:column;gap:1px}
+  .ddpanel{position:absolute;top:calc(100% + 6px);left:0;z-index:50;background:#fff;border:1px solid var(--line);border-radius:12px;box-shadow:0 10px 28px rgba(120,60,80,.18);padding:7px;min-width:180px;max-height:300px;overflow-y:scroll;display:flex;flex-direction:column;gap:1px;scrollbar-width:thin;scrollbar-color:#e2b6c8 transparent}
+  .ddpanel::-webkit-scrollbar{width:9px}
+  .ddpanel::-webkit-scrollbar-thumb{background:#e2b6c8;border-radius:9px;border:2px solid #fff}
+  .ddpanel::-webkit-scrollbar-track{background:transparent}
   .ddpanel[hidden]{display:none}
   .ddopt{display:flex;align-items:center;gap:10px;padding:8px 10px;border-radius:8px;font-size:.87rem;color:var(--plum);cursor:pointer;font-weight:600}
   .ddopt:hover{background:#FBF1F5}
@@ -240,6 +243,8 @@
       <div class="ddrow">
         <div class="dd" id="ddTam"></div>
         <div class="dd" id="ddTipo"></div>
+        <div class="dd" id="ddFase"></div>
+        <div class="dd" id="ddEspec"></div>
         <div class="dd" id="ddMarca"></div>
         <div class="dd" id="ddMkt"></div>
         <div class="dd ddsort" id="ddSort"></div>
@@ -280,9 +285,16 @@ const SUPA='https://qkherjtsvakmpkxebuwy.supabase.co';
 const ANON='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFraGVyanRzdmFrbXBreGVidXd5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzU5Mjk0MjIsImV4cCI6MjA5MTUwNTQyMn0.8AHXoj74DeQ00ubcJ2en7TxX77K3KD5dHWdAJ8LBQBc';
 const TAM_ORDER=['RN','RN+','P','M','G','XG','XXG','XXXG','XXXG+','PP','GG'];
 const TIPOS=[['normal','Normal'],['pants','Pants'],['piscina','Piscina']];
-const CATS=[['fralda','🧷','Fraldas','FRALDA'],['lencinho','💧','Lenços','LENÇOS'],['formula','🍼','Fórmula','FÓRMULA']];
+const CATS=[['fralda','🧷','Fraldas','FRALDA'],['lencinho','💧','Lenços','LENÇOS'],['formula','🥛','Fórmula','FÓRMULA']];
 const TOP=10;
-const KNOWN_BRANDS=['Turma da Mônica','Personal Baby','Turminha da Bagunça','Cotton Baby','Little Toes','Pampers','Huggies','MamyPoko','Babysec','Cremer','Enzzo','Hipopó','Pom Pom','Personal','Mili','Sapeka','Ovelhinha','Chameguinho','Limpinho','Dryces','Nestogeno','Aptamil','Milnutri','Enfamil','Similac','Nestlé','Danone','Ninho','Nan','Itambé','Nutrilon','Johnson'].sort((a,b)=>b.length-a.length);
+const KNOWN_BRANDS=[
+  // fraldas
+  'Turma da Mônica','Personal Baby','Cai Cai Baby','Baby Trends','Nova Bambi','Capricho Baby','Turma da Tia','Guto Baby','MamyPoko','Pampers','Huggies','Babysec','Cremer','Enzzo','Hipopó','Pom Pom','Personal','Sapeka','Ovelhinha','Dryces','Look','Sabrina','Puppi','Guto','Fofinho','Fofo','Nadau','Softys','Zamool','Wesser','Pequerrucho','Freecom','Karoys','Babynha','Bigfral','Cremerzinho','Mili',
+  // lenços
+  'Turminha da Bagunça','Cotton Baby','Bumbum na Lua','Toque de Bebê','Neve Baby','Chameguinho','Limpinho','Bel Baby','Baby Bath',"Johnson's",'Turminha',
+  // fórmula / leite
+  'Aptamil','Nestogeno','Milnutri','Enfamil','Similac','Nutrilon','Milupa','Milumil','Kabrita','Novamil','Neslac','Isomil','Nutramigen','Pregomin','Sanavita','Ninho','Nestlé','Danone','Itambé','Nan','Little Toes'
+].sort((a,b)=>b.length-a.length);
 function marcaOf(p){
   if(p.marca&&p.marca!=='?'&&(''+p.marca).trim().length>1) return p.marca;
   const t=' '+(p.titulo||'').toLowerCase()+' ';
@@ -297,12 +309,30 @@ function sizeFromTitle(t){
   return TAM_ORDER.includes(s)?s:null;
 }
 function tamOf(p){ return p.tamanho || ((p.categoria||'fralda')==='fralda'?sizeFromTitle(p.titulo):null); }
+// fórmula: fase/idade (1 / 2 / 3 / Pré) e categorias especiais
+function faseOf(p){
+  if((p.categoria||'')!=='formula') return null;
+  const t=(p.titulo||'').toLowerCase();
+  if(/\bpr[eé]\b|prematuro/.test(t)) return 'Pré';
+  if(/0\s*[-aà]\s*6\s*m[eê]s|primeiro\s*semestre/.test(t)) return '1';
+  if(/6\s*[-aà]\s*12\s*m[eê]s|segundo\s*semestre/.test(t)) return '2';
+  if(/1\s*[-aà]\s*3\s*ano|acima\s*de\s*1\s*ano|ap[óo]s\s*1\s*ano/.test(t)) return '3';
+  const m=t.match(/(?:aptamil|nan|nestogeno|milnutri|enfamil|similac|nutrilon|milupa|milumil|profutura|premium|comfor\w*|supreme|gold|pro|fases?|etapa|n[º°o]?)\s*([1-4])\b/);
+  if(m) return m[1]==='4'?'3':m[1];
+  return null;
+}
+const ESPECIAIS=[['Soja',/\bsoja\b|soy|isomil/],['Sem lactose',/sem\s*lactose|zero\s*lactose|deslactos|\bsl\b/],['Refluxo (AR)',/anti[\s-]*reflux|\brefluxo\b|espessad|\bar\b/],['Alergia (HA)',/hipoalerg|\bh\.?a\.?\b|pepti|amino\s*[aá]cid|extensam|nutramigen|pregomin|althera|alfar[eé]/],['Sensitive',/sensitive|conforto|comfor|desconforto|c[óo]lica|anti[\s-]*g[áa]s|\bgases\b/],['Prematuro',/prematuro|\bpr[eé][\s-]*termo\b/]];
+function especOf(p){ if((p.categoria||'')!=='formula') return []; const t=' '+(p.titulo||'').toLowerCase()+' '; return ESPECIAIS.filter(([,re])=>re.test(t)).map(([n])=>n); }
 function keepProduct(p){
   if(!(p.preco>0)) return false;
-  if((p.categoria||'fralda')==='fralda'){
-    const t=(p.titulo||'').toLowerCase();
+  const cat=(p.categoria||'fralda'), t=(p.titulo||'').toLowerCase();
+  if(cat==='fralda'){
     if(/\bpano\b|de pano|cremer luxo|reutiliz|geladinha/.test(t)) return false;
     if(p.preco_por_fralda!=null && p.preco_por_fralda>4.5) return false;
+  }
+  if(cat==='formula'){
+    // tira leite comum (integral/desnatado) que não é fórmula/composto infantil
+    if(/integral|desnatad|semidesnatad|condensad/.test(t) && !/f[óo]rmula|\bfase|infantil|\d\s*\+|pepti|comfor|supreme|profutura|premium|nutril|nan\b|aptamil|nestogeno|enfamil/.test(t)) return false;
   }
   return true;
 }
@@ -413,7 +443,7 @@ function renderHome(){
 
 // ---------- LISTA (lista completa + filtro por categoria) ----------
 function goLista(c,filtros){
-  cat=c; f={tams:[],tipos:[],marcas:[],mkts:[],sort:'asc',...filtros};
+  cat=c; f={tams:[],tipos:[],marcas:[],mkts:[],fases:[],espec:[],sort:'asc',...filtros};
   ev('lista',{categoria:c,filtro_valor:(filtros&&filtros.tams&&filtros.tams[0])||''});
   document.getElementById('home').style.display='none';
   const li=document.getElementById('lista');li.style.display='block';li.className='c-'+c;
@@ -440,6 +470,16 @@ function buildFilters(){
   makeDD('ddMarca','Marca','marcas',marcas.map(m=>[m,m]));
   const lojas=[['amazon','Amazon'],['ml','Mercado Livre'],['shopee','Shopee']].filter(([v])=>d.some(p=>p.marketplace===v));
   makeDD('ddMkt','Loja','mkts',lojas);
+  const isFormula=cat==='formula';
+  document.getElementById('ddFase').style.display=isFormula?'':'none';
+  document.getElementById('ddEspec').style.display=isFormula?'':'none';
+  if(isFormula){
+    const ord=['1','2','3','Pré'];
+    const fases=[...new Set(d.map(faseOf).filter(Boolean))].sort((a,b)=>ord.indexOf(a)-ord.indexOf(b));
+    makeDD('ddFase','Fase','fases',fases.map(x=>[x,x==='Pré'?'Pré / prematuro':'Fase '+x+(x==='1'?' · 0-6m':x==='2'?' · 6-12m':' · 1-3 anos')]));
+    const esps=[...new Set([].concat(...d.map(especOf)))];
+    makeDD('ddEspec','Especial','espec',esps.map(x=>[x,x]));
+  }
   makeSortDD();
 }
 function makeSortDD(){
@@ -476,7 +516,7 @@ function ddOpen(dd,panel){closeAllDD();panel.hidden=false;dd.classList.add('open
 function ddHead(label,onClear){const h=el('div','ddhead');h.appendChild(el('span',null,label));const r=el('div','ddheadr');if(onClear){const c=el('button','ddclear','Limpar');c.onclick=e=>{e.stopPropagation();onClear();};r.appendChild(c);}const x=el('button','ddx','Pronto');x.onclick=e=>{e.stopPropagation();closeAllDD();};r.appendChild(x);h.appendChild(r);return h;}
 
 function render(){
-  let list=catData(cat).filter(p=>(!f.tams.length||f.tams.includes(tamOf(p)))&&(!f.tipos.length||f.tipos.includes(p.tipo))&&(!f.marcas.length||f.marcas.includes(marcaOf(p)))&&(!f.mkts.length||f.mkts.includes(p.marketplace)));
+  let list=catData(cat).filter(p=>(!f.tams.length||f.tams.includes(tamOf(p)))&&(!f.tipos.length||f.tipos.includes(p.tipo))&&(!f.marcas.length||f.marcas.includes(marcaOf(p)))&&(!f.mkts.length||f.mkts.includes(p.marketplace))&&(!f.fases.length||f.fases.includes(faseOf(p)))&&(!f.espec.length||f.espec.some(e=>especOf(p).includes(e))));
   const cmp=f.sort==='desconto'?(a,b)=>(b.desconto_pct||0)-(a.desconto_pct||0):f.sort==='asc'?(a,b)=>a.preco_por_fralda-b.preco_por_fralda:(a,b)=>b.preco_por_fralda-a.preco_por_fralda;
   list.sort((a,b)=>_hasD(a)-_hasD(b)||cmp(a,b));
   list=dedup(list);
