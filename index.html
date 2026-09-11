@@ -412,7 +412,7 @@ function brandFromTitle(t){
   return w[0]?w[0][0].toUpperCase()+w[0].slice(1).toLowerCase():'Diversos';
 }
 function card(p,best){
-  const oficial=!!p.oficial;
+  const oficial=p.oficial&&p.marketplace!=='amazon';
   const c=el('div','prod'+(best?' best':'')+(oficial?' oficial':''));
   if(best) c.appendChild(el('span','bestbadge','🥇 menor preço'));
   const th=el('div','thumb',p.imagem_url?'':'🧷'); if(p.imagem_url) th.appendChild(thumbImg(p));
