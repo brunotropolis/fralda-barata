@@ -76,7 +76,7 @@
   .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(224px,1fr));gap:13px}
   .prod{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:13px;box-shadow:var(--shadow);display:flex;flex-direction:column;gap:8px;position:relative;min-width:0}
   .prod.best{border:1.5px solid #E9A23C;background:linear-gradient(180deg,#FFFAF0,#fff);box-shadow:0 5px 18px rgba(233,162,60,.24)}
-  .mk{font-size:.63rem;font-weight:800;padding:3px 8px;border-radius:7px;text-transform:uppercase;letter-spacing:.4px;align-self:flex-start}
+  .mk{font-size:.63rem;font-weight:800;padding:3px 8px;border-radius:7px;text-transform:uppercase;letter-spacing:.4px;align-self:flex-start;white-space:nowrap}
   .mk.amazon{background:#eef0f3;color:#2c3644}.mk.shopee{background:#fcece6;color:#cf4a2c}.mk.ml{background:#eaf1fd;color:#2f6fd6}
   .bestbadge{position:absolute;top:11px;left:11px;background:var(--grad);color:#fff;font-size:.62rem;font-weight:800;padding:3px 8px;border-radius:7px;text-transform:uppercase;letter-spacing:.4px;z-index:1;box-shadow:0 2px 6px rgba(242,123,157,.4)}
   .thumb{position:relative;height:118px;border-radius:12px;background:#fff;box-shadow:inset 0 0 0 1px #f1e6ea;display:flex;align-items:center;justify-content:center;font-size:32px;margin-top:2px;overflow:hidden}
@@ -190,6 +190,9 @@
     .navlinks .navback{padding:5px 9px;font-size:.72rem}
     /* loja + nota numa linha só (desconto saiu daqui) */
     .badges{flex-wrap:nowrap;gap:5px;overflow:hidden}
+    /* "Mercado Livre" é longo — fonte menor + nowrap pra caber com a estrela na mesma linha */
+    .mk.ml{font-size:.54rem;padding:3px 5px;letter-spacing:.2px}
+    .star{font-size:.66rem;padding:2px 6px}
     /* cards: tamanho / preco riscado / preco / quantidade um por linha */
     .meta{flex-wrap:wrap;gap:5px}
     .meta .tag{font-size:.63rem;padding:2px 7px}
@@ -343,6 +346,8 @@ function formulaTipo(p){
 }
 function keepProduct(p){
   if(!(p.preco>0)) return false;
+  // nota 4+: Shopee/ML já vêm filtrados na coleta; Amazon ganha nota via scraper — aplica o piso aqui também
+  if(p.rating!=null && p.rating<4) return false;
   const cat=(p.categoria||'fralda'), t=(p.titulo||'').toLowerCase();
   if(cat==='fralda'){
     if(/\bpano\b|de pano|cremer luxo|reutiliz|geladinha/.test(t)) return false;
