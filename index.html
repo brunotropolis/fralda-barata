@@ -83,7 +83,7 @@
   .star{background:#FFF3E9;color:#a8763b;font-size:.72rem;font-weight:700;padding:2px 7px;border-radius:6px}
   .star b{color:#E9A23C}
   .prod.oficial .thumb{box-shadow:inset 0 0 0 2.5px #66b579}
-  .ofi{position:absolute;bottom:7px;left:50%;transform:translateX(-50%);background:#4FA95A;color:#fff;font-size:.57rem;font-weight:800;text-transform:uppercase;letter-spacing:.3px;padding:2px 9px;border-radius:999px;white-space:nowrap;box-shadow:0 2px 7px rgba(79,169,90,.4);z-index:2}
+  .ofi{position:absolute;bottom:9px;left:50%;transform:translateX(-50%);background:#4FA95A;color:#fff;font-size:.57rem;font-weight:800;text-transform:uppercase;letter-spacing:.3px;padding:2px 9px;border-radius:999px;white-space:nowrap;box-shadow:0 2px 7px rgba(79,169,90,.4);z-index:2}
   .ppf{display:flex;align-items:baseline;gap:5px;margin-top:1px}
   .ppf b{font-family:var(--disp);font-size:1.58rem;font-weight:800;color:var(--price);letter-spacing:-.5px}
   .ppf small{color:var(--muted);font-size:.76rem;font-weight:700}
@@ -96,6 +96,7 @@
   .tot b{color:var(--plum);font-weight:800}
   .tot .de{text-decoration:line-through;margin-right:7px;color:#c98a9c;font-weight:700;font-size:.86rem}
   .tot .qt::before{content:"·";margin:0 5px 0 7px;color:var(--muted);font-weight:600}
+  .discp{align-self:flex-start;font-family:var(--disp);font-weight:800;font-size:.79rem;color:#2b7a44;background:#E3F2E7;padding:3px 10px;border-radius:7px;letter-spacing:.1px;margin-top:1px}
   .ver{margin-top:auto;display:block;text-align:center;background:var(--cta);color:#fff;font-weight:800;text-decoration:none;padding:10px;border-radius:12px;font-size:.9rem;transition:.12s;font-family:var(--disp)}
   .ver:hover{background:var(--cta-d)}
   /* lista */
@@ -111,9 +112,9 @@
   #lista.c-formula .cat.on{background:#4FA95A;border-color:#4FA95A}
   .filters{padding:13px 15px;display:flex;flex-direction:column;gap:11px;border-radius:14px;border:1px solid var(--line);margin:6px 0 16px;transition:background .15s}
   .filters .flabel{color:#8a5566}
-  #lista.c-fralda .filters{background:#FFF1F5;border-color:#F6D8E2}
-  #lista.c-lencinho .filters{background:#EDF5FC;border-color:#D6E7F4}
-  #lista.c-formula .filters{background:#EFF8ED;border-color:#D6ECD4}
+  #lista.c-fralda .filters{background:#FBD9E4;border-color:#F1BFD1}
+  #lista.c-lencinho .filters{background:#D8E9F8;border-color:#BAD8EF}
+  #lista.c-formula .filters{background:#D9EDD6;border-color:#BBE1B8}
   .frow{display:flex;flex-wrap:wrap;gap:7px;align-items:center}
   .ddrow{display:flex;flex-wrap:wrap;gap:9px;align-items:center}
   .dd{position:relative}
@@ -167,9 +168,8 @@
   }
   @media(max-width:560px){
     .grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.sec{padding:14px 11px 16px}.ppf b{font-size:1.36rem}.wm{font-size:1.2rem}.thumb{height:104px}
-    /* loja + nota + desconto numa linha só */
-    .badges{flex-wrap:nowrap;gap:4px;overflow:hidden}
-    .mk,.disc,.star{font-size:.6rem;padding:2px 6px}
+    /* loja + nota numa linha só (desconto saiu daqui) */
+    .badges{flex-wrap:nowrap;gap:5px;overflow:hidden}
     /* cards: tamanho / preco riscado / preco / quantidade um por linha */
     .meta{flex-direction:column;align-items:flex-start;gap:4px}
     .tag.size{background:none;padding:0;color:#7a5c69;font-weight:700}
@@ -184,7 +184,8 @@
     .ddrow{gap:8px}
     .dd{flex:1 1 calc(50% - 4px)}
     .ddbtn{width:100%;justify-content:space-between}
-    #fSort{flex:1 1 100%}
+    .ddsort{flex:1 1 100%}
+    .discp{font-size:.82rem}
   }
 </style>
 </head>
@@ -226,7 +227,7 @@
         <div class="dd" id="ddTipo"></div>
         <div class="dd" id="ddMarca"></div>
         <div class="dd" id="ddMkt"></div>
-        <select id="fSort"><option value="asc">Menor preço primeiro</option><option value="desc">Maior preço primeiro</option><option value="desconto">Maior desconto</option></select>
+        <div class="dd ddsort" id="ddSort"></div>
         <span class="count" id="count"></span>
       </div>
     </div>
@@ -306,6 +307,12 @@ async function load(){
   }catch(e){ document.getElementById('secs').innerHTML='<div class="msg">Não deu pra carregar agora. Recarregue a página.</div>'; }
 }
 
+const _skipBrand=/^(kit|kits|fralda|fraldas|pacote|pacotao|pacotes|combo|leve|pague|menos|mais|compre|super|mega|hiper|hyper|jumbo|premium|descartavel|descartaveis|tira|tiras|un|und|unid|unidade|unidades|com|para|tamanho|gigante|economico|economica|atacado|promocao|oferta|recem|nascido|protecao|protect|toque|seco|sec|absorcao|noturna|dia|noite|infantil|bebe|bebes|caixa|pack)$/i;
+const _noAcc=s=>s.normalize('NFD').replace(/[̀-ͯ]/g,'');
+function brandFromTitle(t){
+  const w=(t||'').split(/\s+/).map(s=>s.replace(/[^A-Za-zÀ-ÿ0-9]/g,'')).filter(s=>s.length>=3&&!/^\d+$/.test(s)&&!_skipBrand.test(_noAcc(s)));
+  return w[0]?w[0][0].toUpperCase()+w[0].slice(1).toLowerCase():'Diversos';
+}
 function card(p,best){
   const oficial=p.oficial&&p.marketplace==='shopee';
   const c=el('div','prod'+(best?' best':'')+(oficial?' oficial':''));
@@ -315,7 +322,6 @@ function card(p,best){
   c.appendChild(th);
   const badges=el('div','badges');
   badges.appendChild(el('span','mk '+p.marketplace,p.marketplace==='ml'?'Mercado Livre':p.marketplace));
-  if(p.desconto_pct) badges.appendChild(el('span','disc',`−${p.desconto_pct}%`));
   if(p.rating) badges.innerHTML+=`<span class="star"><b>★ ${p.rating.toFixed(1)}</b></span>`;
   c.appendChild(badges);
   const un=p.unidade||'fralda';
@@ -323,10 +329,11 @@ function card(p,best){
   const ttxt=(p.titulo||'').length>52?(p.titulo).slice(0,52).replace(/\s+\S*$/,'').trim()+'…':(p.titulo||'');
   c.appendChild(el('div','tt',esc(ttxt)));
   const meta=el('div','meta');
-  if(p.marca)meta.appendChild(el('span','tag',esc(p.marca)));
+  meta.appendChild(el('span','tag',esc(p.marca||brandFromTitle(p.titulo))));
   if(p.tamanho)meta.appendChild(el('span','tag size',p.tamanho));
   if(p.tipo&&p.tipo!=='normal')meta.appendChild(el('span','tag',p.tipo));
   c.appendChild(meta);
+  if(p.desconto_pct) c.appendChild(el('div','discp',`${p.desconto_pct}% de desconto`));
   const de=p.preco_original&&p.preco_original>p.preco?`<span class="de">${brl(p.preco_original)}</span>`:'';
   c.appendChild(el('div','tot',`${de}<span class="pt">${brl(p.preco)}</span><span class="qt"><b>${p.quantidade}</b> ${un==='100g'?'g':un+'s'}</span>`));
   const a=el('a','ver');a.textContent='Ver oferta';
@@ -391,7 +398,22 @@ function buildFilters(){
   makeDD('ddMarca','Marca','marcas',marcas.map(m=>[m,m]));
   const lojas=[['amazon','Amazon'],['ml','Mercado Livre'],['shopee','Shopee']].filter(([v])=>d.some(p=>p.marketplace===v));
   makeDD('ddMkt','Loja','mkts',lojas);
-  const fs=document.getElementById('fSort');fs.value=f.sort;fs.onchange=e=>{f.sort=e.target.value;ev('filtro',{filtro_tipo:'ordem',filtro_valor:e.target.value,categoria:cat});render();};
+  makeSortDD();
+}
+function makeSortDD(){
+  const dd=document.getElementById('ddSort');dd.innerHTML='';
+  const btn=el('button','ddbtn');dd.appendChild(btn);
+  const panel=el('div','ddpanel');panel.hidden=true;panel.onclick=e=>e.stopPropagation();dd.appendChild(panel);
+  const opts=[['asc','Menor preço primeiro'],['desc','Maior preço primeiro'],['desconto','Maior desconto']];
+  opts.forEach(([v,l])=>{
+    const lab=el('label','ddopt');
+    const r=document.createElement('input');r.type='radio';r.name='ddsortopt';r.checked=f.sort===v;
+    r.onchange=()=>{f.sort=v;ev('filtro',{filtro_tipo:'ordem',filtro_valor:v,categoria:cat});upd();closeAllDD();render();};
+    lab.appendChild(r);lab.appendChild(el('span',null,l));panel.appendChild(lab);
+  });
+  function upd(){const cur=opts.find(o=>o[0]===f.sort);btn.innerHTML=`${cur?cur[1]:'Ordenar'} <span class="ddcar">▾</span>`;}
+  upd();
+  btn.onclick=e=>{e.stopPropagation();const w=!panel.hidden;closeAllDD();if(!w){panel.hidden=false;dd.classList.add('open');}};
 }
 function makeDD(id,label,group,items){
   const dd=document.getElementById(id);dd.innerHTML='';
