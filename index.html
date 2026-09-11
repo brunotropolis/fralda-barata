@@ -79,7 +79,8 @@
   .mk{font-size:.63rem;font-weight:800;padding:3px 8px;border-radius:7px;text-transform:uppercase;letter-spacing:.4px;align-self:flex-start}
   .mk.amazon{background:#eef0f3;color:#2c3644}.mk.shopee{background:#fcece6;color:#cf4a2c}.mk.ml{background:#eaf1fd;color:#2f6fd6}
   .bestbadge{position:absolute;top:11px;left:11px;background:var(--grad);color:#fff;font-size:.62rem;font-weight:800;padding:3px 8px;border-radius:7px;text-transform:uppercase;letter-spacing:.4px;z-index:1;box-shadow:0 2px 6px rgba(242,123,157,.4)}
-  .thumb{position:relative;height:118px;border-radius:12px;background:#fff center/contain no-repeat;box-shadow:inset 0 0 0 1px #f1e6ea;display:flex;align-items:center;justify-content:center;font-size:32px;margin-top:2px}
+  .thumb{position:relative;height:118px;border-radius:12px;background:#fff;box-shadow:inset 0 0 0 1px #f1e6ea;display:flex;align-items:center;justify-content:center;font-size:32px;margin-top:2px;overflow:hidden}
+  .thumbimg{max-width:100%;max-height:100%;width:auto;height:auto;object-fit:contain}
   .badges{display:flex;gap:5px;flex-wrap:wrap;min-height:20px}
   .disc{background:#FCE9EE;color:var(--price);font-size:.72rem;font-weight:800;padding:2px 7px;border-radius:6px}
   .star{background:#FFF3E9;color:#a8763b;font-size:.72rem;font-weight:700;padding:2px 7px;border-radius:6px}
@@ -363,9 +364,10 @@ const brl=n=>'R$ '+Number(n).toLocaleString('pt-BR',{minimumFractionDigits:2,max
 const ppfTxt=n=>'R$'+Number(n).toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2});
 const el=(t,c,h)=>{const e=document.createElement(t);if(c)e.className=c;if(h!=null)e.innerHTML=h;return e;};
 const esc=s=>{const d=el('div');d.textContent=s||'';return d.innerHTML;};
-// lazy-load das imagens de produto (background-image) — só baixa quando o card chega perto da tela
-const _imgIO=('IntersectionObserver'in window)?new IntersectionObserver((ents,o)=>{ents.forEach(e=>{if(e.isIntersecting){const t=e.target;if(t.dataset.bg){t.style.backgroundImage=`url("${t.dataset.bg}")`;t.removeAttribute('data-bg');}o.unobserve(t);}});},{rootMargin:'350px'}):null;
-function lazyImg(node){ if(!node.dataset.bg) return; if(_imgIO) _imgIO.observe(node); else node.style.backgroundImage=`url("${node.dataset.bg}")`; }
+// miniatura leve: Shopee serve full-res (~800KB); o sufixo _tn.webp entrega ~29KB (ML/Amazon já vêm pequenos).
+function imgThumb(p){ let u=p.imagem_url||''; if(p.marketplace==='shopee' && /cf\.shopee\.com\.br\/file\//.test(u) && !/_tn/.test(u)) u+='_tn.webp'; return u; }
+// <img loading=lazy> nativo (adia off-screen) + fallback pra imagem original se a miniatura falhar
+function thumbImg(p){ const img=new Image(); img.loading='lazy'; img.decoding='async'; img.alt=''; img.className='thumbimg'; img.onerror=function(){ if(!img._fb && p.imagem_url && img.src!==p.imagem_url){ img._fb=1; img.src=p.imagem_url; } }; img.src=imgThumb(p); return img; }
 const catData=c=>DATA.filter(p=>(p.categoria||'fralda')===c);
 function dedup(list){const v=new Set();return list.filter(p=>{const k=(p.titulo||'').toLowerCase().slice(0,40)+'|'+p.preco;if(v.has(k))return false;v.add(k);return true;});}
 const _hasD=p=>p.desconto_pct?0:1;
@@ -413,7 +415,7 @@ function card(p,best){
   const oficial=p.oficial&&p.marketplace==='shopee';
   const c=el('div','prod'+(best?' best':'')+(oficial?' oficial':''));
   if(best) c.appendChild(el('span','bestbadge','🥇 menor preço'));
-  const th=el('div','thumb',p.imagem_url?'':'🧷'); if(p.imagem_url){ th.dataset.bg=p.imagem_url; lazyImg(th); }
+  const th=el('div','thumb',p.imagem_url?'':'🧷'); if(p.imagem_url) th.appendChild(thumbImg(p));
   if(oficial) th.appendChild(el('span','ofi','Loja oficial'));
   c.appendChild(th);
   const badges=el('div','badges');
