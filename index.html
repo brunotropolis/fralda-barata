@@ -363,6 +363,9 @@ const brl=n=>'R$ '+Number(n).toLocaleString('pt-BR',{minimumFractionDigits:2,max
 const ppfTxt=n=>'R$'+Number(n).toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2});
 const el=(t,c,h)=>{const e=document.createElement(t);if(c)e.className=c;if(h!=null)e.innerHTML=h;return e;};
 const esc=s=>{const d=el('div');d.textContent=s||'';return d.innerHTML;};
+// lazy-load das imagens de produto (background-image) — só baixa quando o card chega perto da tela
+const _imgIO=('IntersectionObserver'in window)?new IntersectionObserver((ents,o)=>{ents.forEach(e=>{if(e.isIntersecting){const t=e.target;if(t.dataset.bg){t.style.backgroundImage=`url("${t.dataset.bg}")`;t.removeAttribute('data-bg');}o.unobserve(t);}});},{rootMargin:'350px'}):null;
+function lazyImg(node){ if(!node.dataset.bg) return; if(_imgIO) _imgIO.observe(node); else node.style.backgroundImage=`url("${node.dataset.bg}")`; }
 const catData=c=>DATA.filter(p=>(p.categoria||'fralda')===c);
 function dedup(list){const v=new Set();return list.filter(p=>{const k=(p.titulo||'').toLowerCase().slice(0,40)+'|'+p.preco;if(v.has(k))return false;v.add(k);return true;});}
 const _hasD=p=>p.desconto_pct?0:1;
@@ -410,7 +413,7 @@ function card(p,best){
   const oficial=p.oficial&&p.marketplace==='shopee';
   const c=el('div','prod'+(best?' best':'')+(oficial?' oficial':''));
   if(best) c.appendChild(el('span','bestbadge','🥇 menor preço'));
-  const th=el('div','thumb',p.imagem_url?'':'🧷'); if(p.imagem_url) th.style.backgroundImage=`url("${p.imagem_url}")`;
+  const th=el('div','thumb',p.imagem_url?'':'🧷'); if(p.imagem_url){ th.dataset.bg=p.imagem_url; lazyImg(th); }
   if(oficial) th.appendChild(el('span','ofi','Loja oficial'));
   c.appendChild(th);
   const badges=el('div','badges');
