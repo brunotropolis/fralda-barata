@@ -129,6 +129,12 @@
   .ddopt{display:flex;align-items:center;gap:10px;padding:8px 10px;border-radius:8px;font-size:.87rem;color:var(--plum);cursor:pointer;font-weight:600}
   .ddopt:hover{background:#FBF1F5}
   .ddopt input{width:17px;height:17px;accent-color:var(--rose);cursor:pointer;flex-shrink:0}
+  .ddhead{display:none;align-items:center;justify-content:space-between;gap:10px;padding:2px 4px 9px;position:sticky;top:0;background:#fff;border-bottom:1px solid var(--line);margin-bottom:4px}
+  .ddhead>span{font-family:var(--disp);font-weight:800;color:var(--plum);font-size:1rem}
+  .ddheadr{display:flex;align-items:center;gap:6px}
+  .ddclear{border:none;background:none;color:var(--muted);font-family:var(--disp);font-weight:700;font-size:.82rem;cursor:pointer;padding:8px 8px}
+  .ddx{border:none;background:var(--rose);color:#fff;font-family:var(--disp);font-weight:800;font-size:.85rem;padding:8px 18px;border-radius:999px;cursor:pointer}
+  .ddback{position:fixed;inset:0;background:rgba(50,25,35,.42);z-index:150;display:none}
   .flabel{font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--muted);min-width:62px}
   .chip{border:1.5px solid var(--line);background:#fff;color:var(--plum);border-radius:999px;padding:5px 12px;font-size:.84rem;font-weight:600;cursor:pointer;white-space:nowrap;font-family:var(--text)}
   .chip:hover{border-color:var(--rose)}.chip.on{background:var(--rose);border-color:var(--rose);color:#fff}
@@ -188,6 +194,13 @@
     .ddbtn{width:100%;justify-content:space-between}
     .ddsort{flex:1 1 100%}
     .discp{font-size:.82rem}
+    /* filtro no mobile = folha de baixo cheia, todas as opções à mostra */
+    .ddback:not([hidden]){display:block}
+    .ddhead{display:flex}
+    .dd.open .ddpanel{position:fixed;left:0;right:0;bottom:0;top:auto;width:auto;min-width:0;max-width:none;max-height:80vh;border-radius:20px 20px 0 0;padding:14px 16px calc(18px + env(safe-area-inset-bottom));z-index:200;box-shadow:0 -10px 34px rgba(0,0,0,.26)}
+    .dd.open .ddopt{padding:13px 8px;font-size:1rem;border-bottom:1px solid #f4eaee}
+    .dd.open .ddopt:last-child{border-bottom:none}
+    .dd.open .ddopt input{width:21px;height:21px}
   }
 </style>
 </head>
@@ -260,6 +273,7 @@
 </div>
 
 <button class="fab" id="fab" onclick="document.getElementById('filters').scrollIntoView({behavior:'smooth',block:'start'})">🔎 Filtre pelo que precisa</button>
+<div class="ddback" id="ddback" hidden onclick="closeAllDD()"></div>
 
 <script>
 const SUPA='https://qkherjtsvakmpkxebuwy.supabase.co';
@@ -431,7 +445,7 @@ function buildFilters(){
 function makeSortDD(){
   const dd=document.getElementById('ddSort');dd.innerHTML='';
   const btn=el('button','ddbtn');dd.appendChild(btn);
-  const panel=el('div','ddpanel');panel.hidden=true;panel.onclick=e=>e.stopPropagation();dd.appendChild(panel);
+  const panel=el('div','ddpanel');panel.hidden=true;panel.onclick=e=>e.stopPropagation();panel.appendChild(ddHead('Ordenar'));dd.appendChild(panel);
   const opts=[['asc','Menor preço primeiro'],['desc','Maior preço primeiro'],['desconto','Maior desconto']];
   opts.forEach(([v,l])=>{
     const lab=el('label','ddopt');
@@ -441,12 +455,12 @@ function makeSortDD(){
   });
   function upd(){const cur=opts.find(o=>o[0]===f.sort);btn.innerHTML=`${cur?cur[1]:'Ordenar'} <span class="ddcar">▾</span>`;}
   upd();
-  btn.onclick=e=>{e.stopPropagation();const w=!panel.hidden;closeAllDD();if(!w){panel.hidden=false;dd.classList.add('open');}};
+  btn.onclick=e=>{e.stopPropagation();const w=!panel.hidden;closeAllDD();if(!w)ddOpen(dd,panel);};
 }
 function makeDD(id,label,group,items){
   const dd=document.getElementById(id);dd.innerHTML='';
   const btn=el('button','ddbtn');dd.appendChild(btn);
-  const panel=el('div','ddpanel');panel.hidden=true;panel.onclick=e=>e.stopPropagation();dd.appendChild(panel);
+  const panel=el('div','ddpanel');panel.hidden=true;panel.onclick=e=>e.stopPropagation();panel.appendChild(ddHead(label,()=>{f[group]=[];[...panel.querySelectorAll('input')].forEach(i=>i.checked=false);upd();render();}));dd.appendChild(panel);
   items.forEach(([v,l])=>{
     const lab=el('label','ddopt');
     const cb=document.createElement('input');cb.type='checkbox';cb.checked=f[group].includes(v);
@@ -455,9 +469,11 @@ function makeDD(id,label,group,items){
   });
   function upd(){const n=f[group].length;btn.innerHTML=`${label}${n?` <b>${n}</b>`:''} <span class="ddcar">▾</span>`;btn.classList.toggle('active',n>0);dd.classList.toggle('on',n>0);}
   upd();
-  btn.onclick=e=>{e.stopPropagation();const wasOpen=!panel.hidden;closeAllDD();if(!wasOpen){panel.hidden=false;dd.classList.add('open');}};
+  btn.onclick=e=>{e.stopPropagation();const wasOpen=!panel.hidden;closeAllDD();if(!wasOpen)ddOpen(dd,panel);};
 }
-function closeAllDD(){document.querySelectorAll('.dd').forEach(d=>{d.classList.remove('open');const p=d.querySelector('.ddpanel');if(p)p.hidden=true;});}
+function closeAllDD(){document.querySelectorAll('.dd').forEach(d=>{d.classList.remove('open');const p=d.querySelector('.ddpanel');if(p)p.hidden=true;});const bk=document.getElementById('ddback');if(bk)bk.hidden=true;}
+function ddOpen(dd,panel){closeAllDD();panel.hidden=false;dd.classList.add('open');const bk=document.getElementById('ddback');if(bk)bk.hidden=false;}
+function ddHead(label,onClear){const h=el('div','ddhead');h.appendChild(el('span',null,label));const r=el('div','ddheadr');if(onClear){const c=el('button','ddclear','Limpar');c.onclick=e=>{e.stopPropagation();onClear();};r.appendChild(c);}const x=el('button','ddx','Pronto');x.onclick=e=>{e.stopPropagation();closeAllDD();};r.appendChild(x);h.appendChild(r);return h;}
 
 function render(){
   let list=catData(cat).filter(p=>(!f.tams.length||f.tams.includes(tamOf(p)))&&(!f.tipos.length||f.tipos.includes(p.tipo))&&(!f.marcas.length||f.marcas.includes(marcaOf(p)))&&(!f.mkts.length||f.mkts.includes(p.marketplace)));
