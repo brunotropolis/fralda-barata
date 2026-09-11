@@ -29,15 +29,15 @@
   a{color:inherit}
   .wrap{max-width:1080px;margin:0 auto;padding:0 18px}
   /* topbar */
-  .bar{display:flex;align-items:center;gap:8px;padding:14px 0}
+  .bar{display:flex;align-items:center;gap:8px;padding:10px 0}
   .brand{display:flex;align-items:center;gap:4px;text-decoration:none;cursor:pointer;flex-shrink:0}
-  .brand svg{width:42px;height:42px;flex-shrink:0}
-  .wm{font-family:var(--disp);font-weight:800;font-size:1.42rem;line-height:1;letter-spacing:-.5px;white-space:nowrap}
+  .brand svg{width:38px;height:38px;flex-shrink:0}
+  .wm{font-family:var(--disp);font-weight:800;font-size:1.34rem;line-height:1;letter-spacing:-.5px;white-space:nowrap}
   .wm .b{color:var(--plum)}.wm .f{color:var(--coral)}
   .navlinks{margin-left:auto;display:flex;gap:6px;flex-shrink:0}
-  .navlinks button{background:#fff;border:1.5px solid var(--line);border-radius:9px;padding:6px 11px;font-size:.78rem;font-weight:700;cursor:pointer;color:var(--coral);font-family:var(--text);white-space:nowrap}
+  .navlinks button{background:#fff;border:1.5px solid var(--line);border-radius:9px;padding:5px 10px;font-size:.76rem;font-weight:700;cursor:pointer;color:var(--coral);font-family:var(--text);white-space:nowrap}
   .navlinks button:hover{border-color:var(--rose);color:var(--rose)}
-  .navlinks .navback{padding:7px 13px;font-size:.82rem;font-weight:800;color:var(--plum);border-color:var(--rose)}
+  .navlinks .navback{padding:5px 11px;font-size:.78rem;font-weight:800;color:var(--plum);border-color:var(--rose)}
   .navlinks .navback:hover{background:#FFF0F4;color:var(--price);border-color:var(--rose)}
   /* hero */
   .hero{background:linear-gradient(135deg,#FFE9DD 0%,#FCDCE6 100%);border-radius:26px;padding:26px 30px;margin-top:6px;display:flex;align-items:center;gap:20px;overflow:hidden}
@@ -93,8 +93,6 @@
   .meta{display:flex;flex-wrap:wrap;gap:5px}
   .tag{font-size:.69rem;font-weight:700;background:#F7EEF1;color:#8a6b78;padding:2px 8px;border-radius:6px}
   .tag.size{background:#FFF0E8;color:var(--coral)}
-  .tag.ftipo{background:#E7F0FB;color:#2f5f9e;font-weight:800;border:1px solid #bcd3ee}
-  .tag.ftipo.comp{background:#FBEFDF;color:#a86e22;border-color:#ecd2a8}
   .tot{font-size:.82rem;color:#6a5a63;font-weight:600;margin-top:1px}
   .tot .pt{font-family:var(--disp);font-weight:800;color:var(--plum);font-size:1.02rem}
   .tot b{color:var(--plum);font-weight:800}
@@ -183,7 +181,12 @@
     .sechead .verall{order:3;flex-basis:100%;margin-left:0;justify-content:center;padding:11px}
   }
   @media(max-width:560px){
-    .grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.sec{padding:14px 11px 16px}.ppf b{font-size:1.36rem}.wm{font-size:1.2rem}.thumb{height:104px}
+    .grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.sec{padding:14px 11px 16px}.ppf b{font-size:1.36rem}.wm{font-size:1.12rem}.thumb{height:104px}
+    .bar{gap:6px;padding:8px 6px 8px 0}
+    .brand svg{width:34px;height:34px}
+    .navlinks{gap:5px}
+    .navlinks button{padding:5px 9px;font-size:.72rem}
+    .navlinks .navback{padding:5px 9px;font-size:.72rem}
     /* loja + nota numa linha só (desconto saiu daqui) */
     .badges{flex-wrap:nowrap;gap:5px;overflow:hidden}
     /* cards: tamanho / preco riscado / preco / quantidade um por linha */
@@ -249,7 +252,6 @@
       <div class="ddrow">
         <div class="dd" id="ddTam"></div>
         <div class="dd" id="ddTipo"></div>
-        <div class="dd" id="ddFtipo"></div>
         <div class="dd" id="ddFase"></div>
         <div class="dd" id="ddEspec"></div>
         <div class="dd" id="ddMarca"></div>
@@ -325,7 +327,7 @@ function faseOf(p){
   if(/0\s*[-aà]\s*6\s*m[eê]s|primeiro\s*semestre/.test(t)) return '1';
   if(/6\s*[-aà]\s*12\s*m[eê]s|segundo\s*semestre/.test(t)) return '2';
   if(/1\s*[-aà]\s*3\s*ano|acima\s*de\s*1\s*ano|ap[óo]s\s*1\s*ano/.test(t)) return '3';
-  const m=t.match(/(?:aptamil|nan|nestogeno|milnutri|enfamil|similac|nutrilon|milupa|milumil|profutura|premium|comfor\w*|supreme|gold|pro|fases?|etapa|n[º°o]?)\s*([1-4])\b/);
+  const m=t.match(/(?:aptamil|nan|nestogeno|milnutri|enfamil|similac|nutrilon|milupa|milumil|profutura|futura|premium|comfor\w*|supreme|gold|pro|fases?|etapa|n[º°o]?)\s*([1-4])\b/);
   if(m) return m[1]==='4'?'3':m[1];
   return null;
 }
@@ -335,7 +337,7 @@ function especOf(p){ if((p.categoria||'')!=='formula') return []; const t=' '+(p
 function formulaTipo(p){
   if((p.categoria||'')!=='formula') return null;
   const t=(p.titulo||'').toLowerCase();
-  if(/composto\s*l[áa]cteo|ninho\s*fases|\bfases\b|milnutri|crescimento|acima\s*de\s*1\s*ano|ap[óo]s\s*1\s*ano/.test(t) || faseOf(p)==='3' || /\b[13]\s*\+/.test(t)) return 'Composto lácteo';
+  if(/composto\s*l[áa]cteo|\bninho\b|nestonutri|fortini|\bfases\b|milnutri|crescimento|acima\s*de\s*1\s*ano|ap[óo]s\s*1\s*ano|soja\s*[34]\b|[34]\s*a\s*\d+\s*anos?/.test(t) || faseOf(p)==='3' || /\b[13]\s*\+/.test(t)) return 'Composto lácteo';
   return 'Fórmula infantil';
 }
 function keepProduct(p){
@@ -346,8 +348,12 @@ function keepProduct(p){
     if(p.preco_por_fralda!=null && p.preco_por_fralda>4.5) return false;
   }
   if(cat==='formula'){
+    // barra o que não é leite/fórmula (talco, pomada, cremes que vazam da busca "infantil")
+    if(/\btalco\b|pomada|antiassadura|assadura|hidratante|sabonete|shampoo|col[óo]nia|len[çc]o/.test(t)) return false;
     // tira leite comum (integral/desnatado) que não é fórmula/composto infantil
     if(/integral|desnatad|semidesnatad|condensad/.test(t) && !/f[óo]rmula|\bfase|infantil|\d\s*\+|pepti|comfor|supreme|profutura|premium|nutril|nan\b|aptamil|nestogeno|enfamil/.test(t)) return false;
+    // só fórmula infantil (0-12m) — tira composto lácteo (Ninho Fases, Milnutri, +1 ano)
+    if(formulaTipo(p)==='Composto lácteo') return false;
   }
   return true;
 }
@@ -418,7 +424,6 @@ function card(p,best){
   const meta=el('div','meta');
   const _m=marcaOf(p); if(_m) meta.appendChild(el('span','tag',esc(_m)));
   if(p.tipo&&p.tipo!=='normal') meta.appendChild(el('span','tag',p.tipo[0].toUpperCase()+p.tipo.slice(1)));
-  const _ft=formulaTipo(p); if(_ft) meta.appendChild(el('span','tag ftipo'+(_ft==='Composto lácteo'?' comp':''),_ft));
   if(meta.children.length) c.appendChild(meta);
   const _t=tamOf(p); if(_t) c.appendChild(el('div','szline',`<span class="tag size">${esc(_t)}</span>`));
   if(p.desconto_pct) c.appendChild(el('div','discp',`${p.desconto_pct}% de desconto`));
@@ -489,12 +494,9 @@ function buildFilters(){
   const lojas=[['amazon','Amazon'],['ml','Mercado Livre'],['shopee','Shopee']].filter(([v])=>d.some(p=>p.marketplace===v));
   makeDD('ddMkt','Loja','mkts',lojas);
   const isFormula=cat==='formula';
-  document.getElementById('ddFtipo').style.display=isFormula?'':'none';
   document.getElementById('ddFase').style.display=isFormula?'':'none';
   document.getElementById('ddEspec').style.display=isFormula?'':'none';
   if(isFormula){
-    const ftipos=[...new Set(d.map(formulaTipo).filter(Boolean))].sort();
-    makeDD('ddFtipo','Tipo','ftipos',ftipos.map(x=>[x,x]));
     const ord=['1','2','3','Pré'];
     const fases=[...new Set(d.map(faseOf).filter(Boolean))].sort((a,b)=>ord.indexOf(a)-ord.indexOf(b));
     makeDD('ddFase','Fase','fases',fases.map(x=>[x,x==='Pré'?'Pré / prematuro':'Fase '+x+(x==='1'?' · 0-6m':x==='2'?' · 6-12m':' · 1-3 anos')]));
@@ -555,7 +557,7 @@ function ddOpen(dd,panel){closeAllDD();panel.hidden=false;dd.classList.add('open
 function ddHead(label,onClear){const h=el('div','ddhead');h.appendChild(el('span',null,label));const r=el('div','ddheadr');if(onClear){const c=el('button','ddclear','Limpar');c.onclick=e=>{e.stopPropagation();onClear();};r.appendChild(c);}const x=el('button','ddx','Pronto');x.onclick=e=>{e.stopPropagation();closeAllDD();};r.appendChild(x);h.appendChild(r);return h;}
 
 function render(){
-  let list=catData(cat).filter(p=>(!f.tams.length||f.tams.includes(tamOf(p)))&&(!f.tipos.length||f.tipos.includes(p.tipo))&&(!f.marcas.length||f.marcas.includes(marcaOf(p)))&&(!f.mkts.length||f.mkts.includes(p.marketplace))&&(!f.fases.length||f.fases.includes(faseOf(p)))&&(!f.espec.length||f.espec.some(e=>especOf(p).includes(e)))&&(!f.ftipos.length||f.ftipos.includes(formulaTipo(p))));
+  let list=catData(cat).filter(p=>(!f.tams.length||f.tams.includes(tamOf(p)))&&(!f.tipos.length||f.tipos.includes(p.tipo))&&(!f.marcas.length||f.marcas.includes(marcaOf(p)))&&(!f.mkts.length||f.mkts.includes(p.marketplace))&&(!f.fases.length||f.fases.includes(faseOf(p)))&&(!f.espec.length||f.espec.some(e=>especOf(p).includes(e))));
   const cmp=f.sort==='desconto'?(a,b)=>(b.desconto_pct||0)-(a.desconto_pct||0):f.sort==='asc'?(a,b)=>a.preco_por_fralda-b.preco_por_fralda:(a,b)=>b.preco_por_fralda-a.preco_por_fralda;
   list.sort((a,b)=>_hasD(a)-_hasD(b)||cmp(a,b));
   list=dedup(list);
