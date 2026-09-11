@@ -332,15 +332,25 @@ const TOP=10;
 const KNOWN_BRANDS=[
   // fraldas
   'Turma da Mônica','Personal Baby','Cai Cai Baby','Baby Trends','Nova Bambi','Capricho Baby','Turma da Tia','Guto Baby','MamyPoko','Pampers','Huggies','Babysec','Cremer','Enzzo','Hipopó','Pom Pom','Personal','Sapeka','Ovelhinha','Dryces','Look','Sabrina','Puppi','Guto','Fofinho','Fofo','Nadau','Softys','Zamool','Wesser','Pequerrucho','Freecom','Karoys','Babynha','Bigfral','Cremerzinho','Mili',
-  'Higimaxi','Vitalidade','Bee Free','Galinha Pintadinha','Sumikko','Premium Care',
+  'Higimaxi','Vitalidade','Bee Free','Galinha Pintadinha','Sumikko','Premium Care','Confort Master','Baby Willy',
   // lenços
   'Turma da Alegria','Chameguinho Baby','Easy Now Baby','Infância Feliz','Use It Baby','Bebê Limpinho','Bepantol Baby','Turminha da Bagunça','Cotton Baby','Bumbum na Lua','Toque de Bebê','Upa Bebê','Pippo Baby','Mumm Baby','Baby Club','Personalidade','Piquitucho','IsaBaby','Neve Baby','Chameguinho','Limpinho','Bel Baby','Baby Bath',"Johnson's",'Turminha','Meu Bebê','Meu Bebé','Baby Star','Puro Amor','Baby Free','Sininho','Bepantol','Huggies Baby',
   // fórmula / leite
   'Aptamil','Nestogeno','Milnutri','Enfamil','Similac','Nutrilon','Milupa','Milumil','Kabrita','Novamil','Neslac','Isomil','Nutramigen','Pregomin','Sanavita','Nestonutri','Aptanutri','Neocate','Nutramigen','Ninho','Nestlé','Danone','Itambé','Nan','Little Toes'
 ].sort((a,b)=>b.length-a.length);
+// apelidos/variações que o dicionário exato não pega (ex: "Turma Mônica" sem o "da")
+const BRAND_ALIAS=[
+  [/turma\s+(?:da\s+)?m[ôo]nica/,'Turma da Mônica'],
+  [/baby\s*bee\s*free|\bbabybee\b/,'Bee Free'],
+  [/galinha\s*pintadinha/,'Galinha Pintadinha'],
+];
 function marcaOf(p){
+  // 1) marca do banco (quando confiável) vence
   if(p.marca&&p.marca!=='?'&&(''+p.marca).trim().length>1) return p.marca;
   const t=' '+(p.titulo||'').toLowerCase()+' ';
+  // 2) apelidos (corrige marca vazia/parcial antes do fallback genérico)
+  for(const [re,n] of BRAND_ALIAS){ if(re.test(t)) return n; }
+  // 3) dicionário de marcas conhecidas
   for(const b of KNOWN_BRANDS){ if(t.includes(' '+b.toLowerCase())) return b; }
   return brandFromTitle(p.titulo);
 }
@@ -451,10 +461,10 @@ function mostrarAtualizacao(){
   el.textContent = hoje ? `Atualizado hoje às ${hh}h${mm}` : `Atualizado em ${dd}/${mo} às ${hh}h${mm}`;
 }
 
-const _skipBrand=/^(kit|kits|fralda|fraldas|pacote|pacotao|pacotes|combo|leve|pague|menos|mais|compre|super|mega|hiper|hyper|jumbo|premium|descartavel|descartaveis|tira|tiras|un|und|unid|unidade|unidades|com|para|tamanho|gigante|economico|economica|atacado|promocao|oferta|recem|nascido|protecao|protect|toque|seco|sec|absorcao|noturna|dia|noite|infantil|bebe|bebes|caixa|pack|toalha|toalhas|umedecida|umedecidas|umedecido|umedecidos|lenco|lencos|folha|folhas|higiene|lata|latas|composto|lacteo|leite|formula|ultra|plus|agua|neonato|nenem|menino|menina|roupa|intima|calca|algodao|aloe|vera|perfume|hipoalergenico|baby|lavanda|camomila|erva|classic|fresh|clean|soft|wipes|extra|natural|suave|pura|puro|pure|kids|tampa|flip|top|the|byn|care|cha|care|linha|tira|folhas|super|maxi|mini|plus)$/i;
+const _skipBrand=/^(kit|kits|fralda|fraldas|pacote|pacotao|pacotes|combo|leve|pague|menos|mais|compre|super|mega|hiper|hyper|jumbo|premium|descartavel|descartaveis|tira|tiras|un|und|unid|unidade|unidades|com|para|tamanho|gigante|economico|economica|atacado|promocao|oferta|recem|nascido|protecao|protect|toque|seco|sec|absorcao|noturna|dia|noite|infantil|bebe|bebes|caixa|pack|toalha|toalhas|umedecida|umedecidas|umedecido|umedecidos|lenco|lencos|folha|folhas|higiene|lata|latas|composto|lacteo|leite|formula|ultra|plus|agua|neonato|nenem|menino|menina|roupa|intima|calca|algodao|aloe|vera|perfume|hipoalergenico|baby|lavanda|camomila|erva|classic|fresh|clean|soft|wipes|extra|natural|suave|pura|puro|pure|kids|tampa|flip|top|the|byn|care|cha|care|linha|tira|folhas|super|maxi|mini|plus|ptes|pts|pecas|peca|pecgas|segunda|dupla|tipo|enxoval|xxg|xxxg|reutilizavel|reutilizaveis|antialergico)$/i;
 const _noAcc=s=>s.normalize('NFD').replace(/[̀-ͯ]/g,'');
 function brandFromTitle(t){
-  const w=(t||'').split(/\s+/).map(s=>s.replace(/[^A-Za-zÀ-ÿ0-9]/g,'')).filter(s=>s.length>=3&&!/^\d+$/.test(s)&&!_skipBrand.test(_noAcc(s)));
+  const w=(t||'').split(/\s+/).map(s=>s.replace(/[^A-Za-zÀ-ÿ0-9]/g,'')).filter(s=>s.length>=3&&!/^\d/.test(s)&&!_skipBrand.test(_noAcc(s)));
   return w[0]?w[0][0].toUpperCase()+w[0].slice(1).toLowerCase():'Diversos';
 }
 function card(p,best){
