@@ -1,0 +1,24 @@
+# Busca Fralda
+
+> Comparador de preço por fralda: mostra quanto custa cada fralda (R$ por unidade) na Amazon, Mercado Livre e Shopee, ordenando do mais barato. Também compara lenços umedecidos (R$ por lenço) e fórmula infantil (R$ por 100g). Mantém só produtos bem avaliados (nota 4 ou mais).
+
+Busca Fralda é um projeto da Ofertas Maternas / Manual do Recém-Nascido (MRN Serviços Digitais LTDA). Não vende nada: os botões "Ver oferta" levam à loja com link de afiliado, pelo mesmo preço para o comprador.
+
+## O que o site faz
+- Coleta ofertas de fralda descartável, lenço umedecido e fórmula infantil na Amazon, Mercado Livre e Shopee, várias vezes ao dia.
+- Calcula o preço por unidade (por fralda, por lenço, por 100g de fórmula) para comparar de forma justa pacotes de tamanhos diferentes — um pacote "barato" com poucas unidades quase sempre sai mais caro por fralda.
+- Filtra qualidade: só produtos bem avaliados (nota 4+ na Shopee e no Mercado Livre; curadoria da própria Amazon), sem pacotão de revenda, fralda geriátrica ou itens que não são de bebê. Na aba Fórmula, só fórmula infantil de 0 a 12 meses (composto lácteo/crescimento fica de fora).
+
+## Categorias
+- Fraldas descartáveis, por tamanho: RN, RN+, P, M, G, XG, XXG, XXXG
+- Lenços umedecidos para bebê
+- Fórmula infantil (0 a 12 meses)
+
+## Perguntas frequentes
+- O preço é sempre o mesmo da loja? Mostramos o valor da última coleta; o preço final é o que aparecer na loja no momento da compra.
+- Por que a mesma fralda tem preços diferentes? Cada loja e cada pacote têm preços próprios; o comparador ordena por preço por fralda para mostrar onde compensa.
+- Vocês vendem fralda? Não, é só um comparador. A compra é direto na Amazon, Mercado Livre ou Shopee.
+
+## Contato
+- E-mail: suporte@manualdorecemnascido.com.br
+- Site: https://fraldas.manualdorecemnascido.com.br/
