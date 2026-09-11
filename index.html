@@ -29,15 +29,15 @@
   a{color:inherit}
   .wrap{max-width:1080px;margin:0 auto;padding:0 18px}
   /* topbar */
-  .bar{display:flex;align-items:center;gap:12px;padding:14px 0}
-  .brand{display:flex;align-items:center;gap:4px;text-decoration:none;cursor:pointer}
+  .bar{display:flex;align-items:center;gap:8px;padding:14px 0}
+  .brand{display:flex;align-items:center;gap:4px;text-decoration:none;cursor:pointer;flex-shrink:0}
   .brand svg{width:42px;height:42px;flex-shrink:0}
-  .wm{font-family:var(--disp);font-weight:800;font-size:1.42rem;line-height:1;letter-spacing:-.5px}
+  .wm{font-family:var(--disp);font-weight:800;font-size:1.42rem;line-height:1;letter-spacing:-.5px;white-space:nowrap}
   .wm .b{color:var(--plum)}.wm .f{color:var(--coral)}
-  .navlinks{margin-left:auto;display:flex;gap:6px}
-  .navlinks button{background:#fff;border:1.5px solid var(--line);border-radius:10px;padding:8px 13px;font-size:.83rem;font-weight:700;cursor:pointer;color:var(--coral);font-family:var(--text)}
+  .navlinks{margin-left:auto;display:flex;gap:6px;flex-shrink:0}
+  .navlinks button{background:#fff;border:1.5px solid var(--line);border-radius:9px;padding:6px 11px;font-size:.78rem;font-weight:700;cursor:pointer;color:var(--coral);font-family:var(--text);white-space:nowrap}
   .navlinks button:hover{border-color:var(--rose);color:var(--rose)}
-  .navlinks .navback{padding:10px 18px;font-size:.9rem;font-weight:800;color:var(--plum);border-color:var(--rose)}
+  .navlinks .navback{padding:7px 13px;font-size:.82rem;font-weight:800;color:var(--plum);border-color:var(--rose)}
   .navlinks .navback:hover{background:#FFF0F4;color:var(--price);border-color:var(--rose)}
   /* hero */
   .hero{background:linear-gradient(135deg,#FFE9DD 0%,#FCDCE6 100%);border-radius:26px;padding:26px 30px;margin-top:6px;display:flex;align-items:center;gap:20px;overflow:hidden}
@@ -126,10 +126,12 @@
   .dd.open .ddbtn .ddcar{transform:rotate(180deg)}
   .dd.on .ddbtn{border-color:var(--rose);background:#FFF0F4;color:var(--price)}
   .dd.on .ddbtn b{background:var(--rose);color:#fff;border-radius:999px;padding:0 6px;font-size:.72rem;margin-left:1px}
-  .ddpanel{position:absolute;top:calc(100% + 6px);left:0;z-index:50;background:#fff;border:1px solid var(--line);border-radius:12px;box-shadow:0 10px 28px rgba(120,60,80,.18);padding:7px;min-width:180px;max-height:300px;overflow-y:scroll;display:flex;flex-direction:column;gap:1px;scrollbar-width:thin;scrollbar-color:#e2b6c8 transparent}
-  .ddpanel::-webkit-scrollbar{width:9px}
-  .ddpanel::-webkit-scrollbar-thumb{background:#e2b6c8;border-radius:9px;border:2px solid #fff}
-  .ddpanel::-webkit-scrollbar-track{background:transparent}
+  .ddpanel{position:absolute;top:calc(100% + 6px);left:0;z-index:50;background:#fff;border:1px solid var(--line);border-radius:12px;box-shadow:0 10px 28px rgba(120,60,80,.18);padding:7px;min-width:180px;max-height:300px;display:flex;flex-direction:column;gap:0;overflow:hidden}
+  .ddlist{flex:1;min-height:0;overflow-y:auto;overflow-x:hidden;display:flex;flex-direction:column;gap:1px;padding-left:16px;scrollbar-width:none}
+  .ddlist::-webkit-scrollbar{display:none}
+  .ddbar{position:absolute;left:5px;width:11px;border-radius:9px;background:#f2dae6;display:none;pointer-events:none;z-index:3}
+  .ddbar.on{display:block}
+  .ddbarT{position:absolute;left:0;width:100%;background:#d1739f;border-radius:9px;min-height:34px;box-shadow:0 1px 3px rgba(160,60,110,.3)}
   .ddpanel[hidden]{display:none}
   .ddopt{display:flex;align-items:center;gap:10px;padding:8px 10px;border-radius:8px;font-size:.87rem;color:var(--plum);cursor:pointer;font-weight:600}
   .ddopt:hover{background:#FBF1F5}
@@ -382,7 +384,7 @@ async function load(){
   }catch(e){ document.getElementById('secs').innerHTML='<div class="msg">Não deu pra carregar agora. Recarregue a página.</div>'; }
 }
 
-const _skipBrand=/^(kit|kits|fralda|fraldas|pacote|pacotao|pacotes|combo|leve|pague|menos|mais|compre|super|mega|hiper|hyper|jumbo|premium|descartavel|descartaveis|tira|tiras|un|und|unid|unidade|unidades|com|para|tamanho|gigante|economico|economica|atacado|promocao|oferta|recem|nascido|protecao|protect|toque|seco|sec|absorcao|noturna|dia|noite|infantil|bebe|bebes|caixa|pack|toalha|toalhas|umedecida|umedecidas|umedecido|umedecidos|lenco|lencos|folha|folhas|higiene|lata|latas|composto|lacteo|leite|formula|ultra|plus|agua|neonato|nenem|menino|menina|roupa|intima|calca|algodao|aloe|vera|perfume|hipoalergenico|baby|lavanda|camomila|erva|classic|fresh|clean|soft|wipes|extra|natural|suave|pura|puro|pure|kids|tampa|flip|top|the)$/i;
+const _skipBrand=/^(kit|kits|fralda|fraldas|pacote|pacotao|pacotes|combo|leve|pague|menos|mais|compre|super|mega|hiper|hyper|jumbo|premium|descartavel|descartaveis|tira|tiras|un|und|unid|unidade|unidades|com|para|tamanho|gigante|economico|economica|atacado|promocao|oferta|recem|nascido|protecao|protect|toque|seco|sec|absorcao|noturna|dia|noite|infantil|bebe|bebes|caixa|pack|toalha|toalhas|umedecida|umedecidas|umedecido|umedecidos|lenco|lencos|folha|folhas|higiene|lata|latas|composto|lacteo|leite|formula|ultra|plus|agua|neonato|nenem|menino|menina|roupa|intima|calca|algodao|aloe|vera|perfume|hipoalergenico|baby|lavanda|camomila|erva|classic|fresh|clean|soft|wipes|extra|natural|suave|pura|puro|pure|kids|tampa|flip|top|the|byn|care|cha|care|linha|tira|folhas|super|maxi|mini|plus)$/i;
 const _noAcc=s=>s.normalize('NFD').replace(/[̀-ͯ]/g,'');
 function brandFromTitle(t){
   const w=(t||'').split(/\s+/).map(s=>s.replace(/[^A-Za-zÀ-ÿ0-9]/g,'')).filter(s=>s.length>=3&&!/^\d+$/.test(s)&&!_skipBrand.test(_noAcc(s)));
@@ -490,14 +492,16 @@ function buildFilters(){
 function makeSortDD(){
   const dd=document.getElementById('ddSort');dd.innerHTML='';
   const btn=el('button','ddbtn');dd.appendChild(btn);
-  const panel=el('div','ddpanel');panel.hidden=true;panel.onclick=e=>e.stopPropagation();panel.appendChild(ddHead('Ordenar'));dd.appendChild(panel);
+  const panel=el('div','ddpanel');panel.hidden=true;panel.onclick=e=>e.stopPropagation();panel.appendChild(ddHead('Ordenar'));
+  const listE=el('div','ddlist');
   const opts=[['asc','Menor preço primeiro'],['desc','Maior preço primeiro'],['desconto','Maior desconto']];
   opts.forEach(([v,l])=>{
     const lab=el('label','ddopt');
     const r=document.createElement('input');r.type='radio';r.name='ddsortopt';r.checked=f.sort===v;
     r.onchange=()=>{f.sort=v;ev('filtro',{filtro_tipo:'ordem',filtro_valor:v,categoria:cat});upd();closeAllDD();render();};
-    lab.appendChild(r);lab.appendChild(el('span',null,l));panel.appendChild(lab);
+    lab.appendChild(r);lab.appendChild(el('span',null,l));listE.appendChild(lab);
   });
+  panel.appendChild(listE);const bar=el('div','ddbar');bar.appendChild(el('div','ddbarT'));panel.appendChild(bar);dd.appendChild(panel);
   function upd(){const cur=opts.find(o=>o[0]===f.sort);btn.innerHTML=`${cur?cur[1]:'Ordenar'} <span class="ddcar">▾</span>`;}
   upd();
   btn.onclick=e=>{e.stopPropagation();const w=!panel.hidden;closeAllDD();if(!w)ddOpen(dd,panel);};
@@ -505,19 +509,35 @@ function makeSortDD(){
 function makeDD(id,label,group,items){
   const dd=document.getElementById(id);dd.innerHTML='';
   const btn=el('button','ddbtn');dd.appendChild(btn);
-  const panel=el('div','ddpanel');panel.hidden=true;panel.onclick=e=>e.stopPropagation();panel.appendChild(ddHead(label,()=>{f[group]=[];[...panel.querySelectorAll('input')].forEach(i=>i.checked=false);upd();render();}));dd.appendChild(panel);
+  const panel=el('div','ddpanel');panel.hidden=true;panel.onclick=e=>e.stopPropagation();panel.appendChild(ddHead(label,()=>{f[group]=[];[...panel.querySelectorAll('input')].forEach(i=>i.checked=false);upd();render();}));
+  const listE=el('div','ddlist');
   items.forEach(([v,l])=>{
     const lab=el('label','ddopt');
     const cb=document.createElement('input');cb.type='checkbox';cb.checked=f[group].includes(v);
     cb.onchange=()=>{const i=f[group].indexOf(v);if(cb.checked&&i<0){f[group].push(v);ev('filtro',{filtro_tipo:group,filtro_valor:v,categoria:cat});}else if(!cb.checked&&i>=0)f[group].splice(i,1);upd();render();};
-    lab.appendChild(cb);lab.appendChild(el('span',null,l));panel.appendChild(lab);
+    lab.appendChild(cb);lab.appendChild(el('span',null,l));listE.appendChild(lab);
   });
+  panel.appendChild(listE);const bar=el('div','ddbar');bar.appendChild(el('div','ddbarT'));panel.appendChild(bar);dd.appendChild(panel);
   function upd(){const n=f[group].length;btn.innerHTML=`${label}${n?` <b>${n}</b>`:''} <span class="ddcar">▾</span>`;btn.classList.toggle('active',n>0);dd.classList.toggle('on',n>0);}
   upd();
   btn.onclick=e=>{e.stopPropagation();const wasOpen=!panel.hidden;closeAllDD();if(!wasOpen)ddOpen(dd,panel);};
 }
 function closeAllDD(){document.querySelectorAll('.dd').forEach(d=>{d.classList.remove('open');const p=d.querySelector('.ddpanel');if(p)p.hidden=true;});const bk=document.getElementById('ddback');if(bk)bk.hidden=true;}
-function ddOpen(dd,panel){closeAllDD();panel.hidden=false;dd.classList.add('open');const bk=document.getElementById('ddback');if(bk)bk.hidden=false;}
+function wireScroll(panel){
+  const listE=panel.querySelector('.ddlist'),bar=panel.querySelector('.ddbar'),th=panel.querySelector('.ddbarT');
+  if(!listE||!bar)return;
+  function upd(){
+    const sh=listE.scrollHeight,ch=listE.clientHeight;
+    if(sh<=ch+2){bar.classList.remove('on');return;}
+    bar.classList.add('on');
+    bar.style.top=listE.offsetTop+'px';bar.style.height=ch+'px';
+    const thumbH=Math.max(34,Math.round(ch*ch/sh)),maxTop=ch-thumbH,frac=listE.scrollTop/(sh-ch);
+    th.style.height=thumbH+'px';th.style.top=Math.round(frac*maxTop)+'px';
+  }
+  if(!listE._wired){listE.addEventListener('scroll',upd,{passive:true});listE._wired=1;}
+  requestAnimationFrame(upd);setTimeout(upd,60);
+}
+function ddOpen(dd,panel){closeAllDD();panel.hidden=false;dd.classList.add('open');const bk=document.getElementById('ddback');if(bk)bk.hidden=false;wireScroll(panel);}
 function ddHead(label,onClear){const h=el('div','ddhead');h.appendChild(el('span',null,label));const r=el('div','ddheadr');if(onClear){const c=el('button','ddclear','Limpar');c.onclick=e=>{e.stopPropagation();onClear();};r.appendChild(c);}const x=el('button','ddx','Pronto');x.onclick=e=>{e.stopPropagation();closeAllDD();};r.appendChild(x);h.appendChild(r);return h;}
 
 function render(){
