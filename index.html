@@ -123,11 +123,12 @@
   .meta{display:flex;flex-wrap:wrap;gap:5px}
   .tag{font-size:.69rem;font-weight:700;background:#F7EEF1;color:#8a6b78;padding:2px 8px;border-radius:6px}
   .tag.size{background:#FFF0E8;color:var(--coral)}
-  .tot{font-size:.82rem;color:#6a5a63;font-weight:600;margin-top:1px}
+  .tot{font-size:.82rem;color:#6a5a63;font-weight:600;margin-top:auto} /* auto: preço+botão na base → nivelados com ou sem selo */
   .tot .pt{font-family:var(--disp);font-weight:800;color:var(--plum);font-size:1.02rem}
   .tot b{color:var(--plum);font-weight:800}
   .tot .de{text-decoration:line-through;margin-right:7px;color:#c98a9c;font-weight:700;font-size:.86rem}
   .tot .qt::before{content:"·";margin:0 5px 0 7px;color:var(--muted);font-weight:600}
+  .low30{align-self:flex-start;font-family:var(--disp);font-weight:700;font-size:.74rem;color:#7a4b12;background:#FCEFD9;padding:3px 9px;border-radius:7px;max-width:100%}
   .discp{align-self:flex-start;font-family:var(--disp);font-weight:800;font-size:.79rem;color:#2b7a44;background:#E3F2E7;padding:3px 10px;border-radius:7px;letter-spacing:.1px;margin-top:1px;white-space:nowrap}
   .szline{margin-top:1px}
   .ver{margin-top:auto;display:block;text-align:center;background:var(--cta);color:#fff;font-weight:800;text-decoration:none;padding:10px;border-radius:12px;font-size:.9rem;transition:.12s;font-family:var(--disp)}
@@ -453,7 +454,7 @@ async function load(){
   try{
     // o Supabase corta em 1000 linhas por consulta: busca cada categoria separada e pagina
     // (numa consulta só, ordenada por R$/unidade, a fórmula — R$/100g — ficava toda de fora)
-    const SEL='id,marketplace,categoria,titulo,marca,tamanho,tipo,quantidade,unidade,preco,preco_original,desconto_pct,preco_por_fralda,rating,oficial,link_afiliado,imagem_url,atualizado_em';
+    const SEL='id,marketplace,categoria,titulo,marca,tamanho,tipo,quantidade,unidade,preco,preco_original,desconto_pct,preco_por_fralda,rating,oficial,link_afiliado,imagem_url,atualizado_em,menor_preco_30d,maior_preco_30d,dias_historico';
     const PAGE=1000;
     const fetchCat=async c=>{
       let out=[];
@@ -508,6 +509,9 @@ function card(p,best){
   if(meta.children.length) c.appendChild(meta);
   const _t=tamOf(p); if(_t) c.appendChild(el('div','szline',`<span class="tag size">${esc(_t)}</span>`));
   if(p.desconto_pct) c.appendChild(el('div','discp',`${p.desconto_pct}% de desconto`));
+  // histórico (trigger no banco): só com ≥7 dias e se o preço já variou >3% — senão o selo não diz nada
+  if(p.dias_historico>=7 && p.menor_preco_30d!=null && p.preco<=p.menor_preco_30d && p.maior_preco_30d>p.preco*1.03)
+    c.appendChild(el('div','low30','📉 Menor preço do mês'));
   const de=p.preco_original&&p.preco_original>p.preco?`<span class="de">${brl(p.preco_original)}</span>`:'';
   c.appendChild(el('div','tot',`${de}<span class="pt">${brl(p.preco)}</span><span class="qt"><b>${p.quantidade}</b> ${un==='100g'?'g':un+'s'}</span>`));
   const a=el('a','ver');a.textContent='Ver oferta';
