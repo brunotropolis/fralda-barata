@@ -328,13 +328,13 @@ const ANON='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI
 const TAM_ORDER=['RN','RN+','P','M','G','XG','XXG','XXXG','XXXG+','PP','GG'];
 const TIPOS=[['normal','Normal'],['pants','Pants'],['piscina','Piscina']];
 const CATS=[['fralda','🧷','Fraldas','FRALDA'],['lencinho','💧','Lenços','LENÇOS'],['formula','🥛','Fórmula','FÓRMULA']];
-const TOP=10;
+const TOP=12; // 12 fecha a grade em 2, 3 ou 4 colunas (10 deixava a última linha com 2 cards no desktop)
 const KNOWN_BRANDS=[
   // fraldas
-  'Turma da Mônica','Personal Baby','Cai Cai Baby','Baby Trends','Nova Bambi','Capricho Baby','Turma da Tia','Guto Baby','MamyPoko','Pampers','Huggies','Babysec','Cremer','Enzzo','Hipopó','Pom Pom','Personal','Sapeka','Ovelhinha','Dryces','Look','Sabrina','Puppi','Guto','Fofinho','Fofo','Nadau','Softys','Zamool','Wesser','Pequerrucho','Freecom','Karoys','Babynha','Bigfral','Cremerzinho','Mili',
+  'Turma da Mônica','Personal Baby','Cai Cai Baby','Baby Trends','Nova Bambi','Capricho Baby','Turma da Tia','Guto Baby','MamyPoko','Pampers','Huggies','Babysec','Cremer','Enzzo','Hipopó','Pom Pom','Personal','Sapeka','Ovelhinha','Dryces','Look','Sabrina','Puppi','Guto','Fofinho','Fofo','Nadau','Softys','Zamool','Wesser','Pequerrucho','Freecom','Karoys','Babynha','Bigfral','Cremerzinho','Mili','Karícia','Panvel','Nenex','Bummis','Estrelinha','Little Baby','Suavidade','Nateen','Splash',
   'Higimaxi','Vitalidade','Bee Free','Galinha Pintadinha','Sumikko','Premium Care','Confort Master','Baby Willy',
   // lenços
-  'Turma da Alegria','Chameguinho Baby','Easy Now Baby','Infância Feliz','Use It Baby','Bebê Limpinho','Bepantol Baby','Turminha da Bagunça','Cotton Baby','Bumbum na Lua','Toque de Bebê','Upa Bebê','Pippo Baby','Mumm Baby','Baby Club','Personalidade','Piquitucho','IsaBaby','Neve Baby','Chameguinho','Limpinho','Bel Baby','Baby Bath',"Johnson's",'Turminha','Meu Bebê','Meu Bebé','Baby Star','Puro Amor','Baby Free','Sininho','Bepantol','Huggies Baby',
+  'Turma da Alegria','Chameguinho Baby','Easy Now Baby','Infância Feliz','Use It Baby','Bebê Limpinho','Bepantol Baby','Turminha da Bagunça','Cotton Baby','Bumbum na Lua','Toque de Bebê','Upa Bebê','Pippo Baby','Mumm Baby','Baby Club','Personalidade','Piquitucho','IsaBaby','Neve Baby','Chameguinho','Limpinho','Bel Baby','Baby Bath',"Johnson's",'Turminha','Meu Bebê','Baby Star','Puro Amor','Baby Free','Sininho','Bepantol','Huggies Baby','Cotton Line','Lua Baby','Bebê Feliz','Baby Byn','Hera Neném','Granado','Flor de Algodão','Pluma Baby','Petty Baby','Quick Baby','Marigold','FeelClean','Lara Baby','Neve Care','Mimo Bebê','Mustela','Clean Baby',
   // fórmula / leite
   'Aptamil','Nestogeno','Milnutri','Enfamil','Similac','Nutrilon','Milupa','Milumil','Kabrita','Novamil','Neslac','Isomil','Nutramigen','Pregomin','Sanavita','Nestonutri','Aptanutri','Neocate','Nutramigen','Ninho','Nestlé','Danone','Itambé','Nan','Little Toes'
 ].sort((a,b)=>b.length-a.length);
@@ -343,16 +343,20 @@ const BRAND_ALIAS=[
   [/turma\s+(?:da\s+)?m[ôo]nica/,'Turma da Mônica'],
   [/baby\s*bee\s*free|\bbabybee\b/,'Bee Free'],
   [/galinha\s*pintadinha/,'Galinha Pintadinha'],
+  [/baby\s*sec\b/,'Babysec'],
+  [/feel\s*clean/,'FeelClean'],
 ];
+const _noAcc=s=>s.normalize('NFD').replace(/[̀-ͯ]/g,'');
 function marcaOf(p){
   // 1) marca do banco (quando confiável) vence
   if(p.marca&&p.marca!=='?'&&(''+p.marca).trim().length>1) return p.marca;
-  const t=' '+(p.titulo||'').toLowerCase()+' ';
+  const t=' '+_noAcc((p.titulo||'').toLowerCase())+' ';
   // 2) apelidos (corrige marca vazia/parcial antes do fallback genérico)
   for(const [re,n] of BRAND_ALIAS){ if(re.test(t)) return n; }
-  // 3) dicionário de marcas conhecidas
-  for(const b of KNOWN_BRANDS){ if(t.includes(' '+b.toLowerCase())) return b; }
-  return brandFromTitle(p.titulo);
+  // 3) dicionário de marcas conhecidas (sem acento dos dois lados: "Meu Bebe" = "Meu Bebê")
+  for(const b of KNOWN_BRANDS){ if(t.includes(' '+_noAcc(b.toLowerCase()))) return b; }
+  // 4) desconhecida = "Outras" (a 1ª palavra do título enchia o filtro de "Cada", "Sem", "Pct")
+  return 'Outras';
 }
 function sizeFromTitle(t){
   let m=(t||'').match(/tamanho\s*:?\s*(rn\s*\+|xxxg|xxg|xg|gg|g|m|pp|p|rn)\b/i);
@@ -390,9 +394,13 @@ function keepProduct(p){
   const cat=(p.categoria||'fralda'), t=(p.titulo||'').toLowerCase();
   if(cat==='fralda'){
     if(/\bpano\b|de pano|cremer luxo|reutiliz|geladinha/.test(t)) return false;
+    // adulto/geriátrica, pet, roupa e acessório que vazam da busca "fralda"
+    if(/geri[áa]tric|adulto|incontin|\btena\b|plenitud|higifral|roupa\s+[íi]ntima|f[êe]mea|\bpet\b|cachorro|fralda\s+de\s+boca|paninho|\bbody\b|regata|tapa[\s-]?fralda|conjunto|toalha\s+fralda|ch[áa]\s+de\s+beb|\d+\s*x\s*\d+\s*cm/.test(t)) return false;
     if(p.preco_por_fralda!=null && p.preco_por_fralda>4.5) return false;
   }
+  if(cat==='lencinho' && /geri[áa]tric|adulto|ch[áa]\s+de\s+beb/.test(t)) return false;
   if(cat==='formula'){
+    if(/repelente/.test(t)) return false;
     // barra o que não é leite/fórmula (talco, pomada, cremes que vazam da busca "infantil")
     if(/\btalco\b|pomada|antiassadura|assadura|hidratante|sabonete|shampoo|col[óo]nia|len[çc]o/.test(t)) return false;
     // tira leite comum (integral/desnatado) que não é fórmula/composto infantil
@@ -409,7 +417,7 @@ const ppfTxt=n=>'R$'+Number(n).toLocaleString('pt-BR',{minimumFractionDigits:2,m
 const el=(t,c,h)=>{const e=document.createElement(t);if(c)e.className=c;if(h!=null)e.innerHTML=h;return e;};
 const esc=s=>{const d=el('div');d.textContent=s||'';return d.innerHTML;};
 // miniatura leve: Shopee serve full-res (~800KB); o sufixo _tn.webp entrega ~29KB (ML/Amazon já vêm pequenos).
-function imgThumb(p){ let u=p.imagem_url||''; if(p.marketplace==='shopee' && /cf\.shopee\.com\.br\/file\//.test(u) && !/_tn/.test(u)) u+='_tn.webp'; return u; }
+function imgThumb(p){ let u=p.imagem_url||''; if(p.marketplace==='shopee' && /cf\.shopee\.com\.br\/file\//.test(u) && !/_tn/.test(u)) u+='_tn.webp'; if(p.marketplace==='amazon') u=u.replace(/\._SL\d+_\./,'._SL320_.'); return u; }
 // <img loading=lazy> nativo (adia off-screen) + fallback pra imagem original se a miniatura falhar
 function thumbImg(p){ const img=new Image(); img.loading='lazy'; img.decoding='async'; img.alt=''; img.className='thumbimg'; img.onerror=function(){ if(!img._fb && p.imagem_url && img.src!==p.imagem_url){ img._fb=1; img.src=p.imagem_url; } }; img.src=imgThumb(p); return img; }
 const catData=c=>DATA.filter(p=>(p.categoria||'fralda')===c);
@@ -475,7 +483,6 @@ function mostrarAtualizacao(){
 }
 
 const _skipBrand=/^(kit|kits|fralda|fraldas|pacote|pacotao|pacotes|combo|leve|pague|menos|mais|compre|super|mega|hiper|hyper|jumbo|premium|descartavel|descartaveis|tira|tiras|un|und|unid|unidade|unidades|com|para|tamanho|gigante|economico|economica|atacado|promocao|oferta|recem|nascido|protecao|protect|toque|seco|sec|absorcao|noturna|dia|noite|infantil|bebe|bebes|caixa|pack|toalha|toalhas|umedecida|umedecidas|umedecido|umedecidos|lenco|lencos|folha|folhas|higiene|lata|latas|composto|lacteo|leite|formula|ultra|plus|agua|neonato|nenem|menino|menina|roupa|intima|calca|algodao|aloe|vera|perfume|hipoalergenico|baby|lavanda|camomila|erva|classic|fresh|clean|soft|wipes|extra|natural|suave|pura|puro|pure|kids|tampa|flip|top|the|byn|care|cha|care|linha|tira|folhas|super|maxi|mini|plus|ptes|pts|pecas|peca|pecgas|segunda|dupla|tipo|enxoval|xxg|xxxg|reutilizavel|reutilizaveis|antialergico)$/i;
-const _noAcc=s=>s.normalize('NFD').replace(/[̀-ͯ]/g,'');
 function brandFromTitle(t){
   const w=(t||'').split(/\s+/).map(s=>s.replace(/[^A-Za-zÀ-ÿ0-9]/g,'')).filter(s=>s.length>=3&&!/^\d/.test(s)&&!_skipBrand.test(_noAcc(s)));
   return w[0]?w[0][0].toUpperCase()+w[0].slice(1).toLowerCase():'Diversos';
