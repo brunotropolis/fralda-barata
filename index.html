@@ -443,9 +443,20 @@ function initTrack(){
 
 async function load(){
   try{
-    const r=await fetch(`${SUPA}/rest/v1/produtos?select=id,marketplace,categoria,titulo,marca,tamanho,tipo,quantidade,unidade,preco,preco_original,desconto_pct,preco_por_fralda,rating,oficial,link_afiliado,imagem_url,atualizado_em&order=preco_por_fralda.asc&limit=2000`,
-      {headers:{apikey:ANON,'Accept-Profile':'fraldas'}});
-    DATA=await r.json(); if(!Array.isArray(DATA)) throw 0;
+    // o Supabase corta em 1000 linhas por consulta: busca cada categoria separada e pagina
+    // (numa consulta só, ordenada por R$/unidade, a fórmula — R$/100g — ficava toda de fora)
+    const SEL='id,marketplace,categoria,titulo,marca,tamanho,tipo,quantidade,unidade,preco,preco_original,desconto_pct,preco_por_fralda,rating,oficial,link_afiliado,imagem_url,atualizado_em';
+    const PAGE=1000;
+    const fetchCat=async c=>{
+      let out=[];
+      for(let off=0;;off+=PAGE){
+        const r=await fetch(`${SUPA}/rest/v1/produtos?select=${SEL}&categoria=eq.${c}&order=preco_por_fralda.asc,id.asc&limit=${PAGE}&offset=${off}`,
+          {headers:{apikey:ANON,'Accept-Profile':'fraldas'}});
+        const page=await r.json(); if(!Array.isArray(page)) throw 0;
+        out=out.concat(page); if(page.length<PAGE) return out;
+      }
+    };
+    DATA=(await Promise.all(CATS.map(([c])=>fetchCat(c)))).flat();
     DATA=DATA.filter(keepProduct);
     mostrarAtualizacao();
     renderHome();
